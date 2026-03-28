@@ -15,7 +15,7 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
 
 <!-- ═══════════ DESKTOP HEADER ═══════════ -->
 <header id="main-header" class="liquid-glass">
-  <a href={`/${langKey}/`} class="logo-link">
+  <a id="header-logo-link" href={`/${langKey}/`} class="logo-link">
     <span class="logo-text">ESTATO</span>
     <span class="logo-dot">◆</span>
   </a>
@@ -69,6 +69,15 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
 
 <!-- ═══════════ MOBILE DOCK ═══════════ -->
 <div class="lg-dock liquid-glass" id="mobile-dock">
+  <!-- Call icon -->
+  <a href="tel:+33600000000" class="dock-btn d-call" aria-label="Appeler">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+    </svg>
+  </a>
+
+  <div class="lg-sep"></div>
+
   <!-- Contact icon -->
   <a href={`mailto:contact@estato.com`} class="dock-btn d-contact" aria-label={t.nav_contact}>
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
@@ -164,17 +173,25 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
     }
   }
 
-  /* Logo */
+  /* Logo — hidden until hero brand exits viewport */
   .logo-link {
     display: flex;
     align-items: center;
     gap: 0.4rem;
     text-decoration: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .logo-link.logo-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .logo-text {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
+    font-size: 2.2rem;
     letter-spacing: 0.2em;
     color: var(--text);
     line-height: 1;
@@ -331,6 +348,12 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
     height: 22px;
     position: relative;
     z-index: 2;
+  }
+
+  .d-call {
+    background: linear-gradient(135deg, #1a6b3c 0%, #0f4526 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(26, 107, 60, 0.4);
   }
 
   .d-contact {
@@ -561,5 +584,20 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
     document.querySelectorAll('.menu-link').forEach(function(el) {
       el.addEventListener('click', closeMenu);
     });
+
+    // Swipe-down gesture on menu panel to close
+    if (panel) {
+      var touchStartY = 0;
+      var touchStartX = 0;
+      panel.addEventListener('touchstart', function(e) {
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
+      panel.addEventListener('touchend', function(e) {
+        var dy = e.changedTouches[0].clientY - touchStartY;
+        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+        if (dy > 80 && dx < 60) closeMenu();
+      }, { passive: true });
+    }
   })();
 </script>

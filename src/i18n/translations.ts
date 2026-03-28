@@ -21,6 +21,10 @@ export const translations: Record<string, Record<string, string>> = {
     hero_subtitle: 'Chaque propriété est une œuvre. Chaque emplacement, un privilège. Bienvenue dans l\'univers ESTATO.',
     hero_cta: 'Voir les propriétés',
     hero_cta2: 'Nous contacter',
+    stat_properties: 'Propriétés',
+    stat_countries: 'Pays',
+    stat_satisfaction: 'Satisfaction',
+    stat_years: 'Ans d\'expérience',
 
     featured_title: 'Sélection Premium',
     featured_subtitle: 'Les propriétés les plus exclusives de notre portefeuille.',
@@ -70,6 +74,10 @@ export const translations: Record<string, Record<string, string>> = {
     hero_subtitle: 'Every property is a masterpiece. Every location, a privilege. Welcome to the ESTATO universe.',
     hero_cta: 'View properties',
     hero_cta2: 'Contact us',
+    stat_properties: 'Properties',
+    stat_countries: 'Countries',
+    stat_satisfaction: 'Satisfaction',
+    stat_years: 'Years of expertise',
 
     featured_title: 'Premium Selection',
     featured_subtitle: 'The most exclusive properties in our portfolio.',
@@ -119,6 +127,10 @@ export const translations: Record<string, Record<string, string>> = {
     hero_subtitle: 'Cada propiedad es una obra maestra. Cada ubicación, un privilegio. Bienvenido al universo ESTATO.',
     hero_cta: 'Ver propiedades',
     hero_cta2: 'Contactarnos',
+    stat_properties: 'Propiedades',
+    stat_countries: 'Países',
+    stat_satisfaction: 'Satisfacción',
+    stat_years: 'Años de experiencia',
 
     featured_title: 'Selección Premium',
     featured_subtitle: 'Las propiedades más exclusivas de nuestra cartera.',
@@ -168,6 +180,10 @@ export const translations: Record<string, Record<string, string>> = {
     hero_subtitle: 'Cada propriedade é uma obra de arte. Cada localização, um privilégio. Bem-vindo ao universo ESTATO.',
     hero_cta: 'Ver propriedades',
     hero_cta2: 'Contacte-nos',
+    stat_properties: 'Propriedades',
+    stat_countries: 'Países',
+    stat_satisfaction: 'Satisfação',
+    stat_years: 'Anos de experiência',
 
     featured_title: 'Seleção Premium',
     featured_subtitle: 'As propriedades mais exclusivas do nosso portefólio.',
