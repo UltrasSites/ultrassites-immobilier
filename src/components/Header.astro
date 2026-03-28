@@ -1,0 +1,565 @@
+---
+import { translations, languages } from '../i18n/translations';
+
+interface Props {
+  lang: string;
+}
+
+const { lang } = Astro.props;
+const langKey = lang && lang in translations ? lang : 'fr';
+const t = (translations as Record<string, Record<string, string>>)[langKey] || {};
+
+const pathSegments = Astro.url.pathname.split('/').filter(Boolean);
+const pathWithoutLang = pathSegments.slice(1).join('/') || '';
+---
+
+<!-- ═══════════ DESKTOP HEADER ═══════════ -->
+<header id="main-header" class="liquid-glass">
+  <a href={`/${langKey}/`} class="logo-link">
+    <span class="logo-text">ESTATO</span>
+    <span class="logo-dot">◆</span>
+  </a>
+
+  <nav class="desktop-nav">
+    <a href={`/${langKey}/#properties`}>{t.nav_properties}</a>
+    <a href={`/${langKey}/#properties`}>{t.nav_buy}</a>
+    <a href={`/${langKey}/#properties`}>{t.nav_rent}</a>
+    <a href={`mailto:contact@estato.com`}>{t.nav_contact}</a>
+  </nav>
+
+  <div class="header-right">
+    <!-- Language Switcher Desktop -->
+    <div class="lang-wrap" id="lang-wrap-desktop">
+      <button
+        type="button"
+        id="lang-btn-desktop"
+        class="lang-btn"
+        aria-label={t.lang_btn_aria}
+        aria-expanded="false"
+        aria-haspopup="true"
+      >
+        <span class="lang-code">{langKey.toUpperCase()}</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div
+        id="lang-dropdown-desktop"
+        class="lang-dropdown hidden"
+        role="menu"
+      >
+        {Object.entries(languages).map(([key, label]) => (
+          <a
+            href={pathWithoutLang ? `/${key}/${pathWithoutLang}` : `/${key}/`}
+            class={`lang-option ${key === langKey ? 'active' : ''}`}
+            role="menuitem"
+          >
+            {label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Contact CTA -->
+    <a href={`mailto:contact@estato.com`} class="header-cta">
+      {t.nav_contact}
+    </a>
+  </div>
+</header>
+
+<!-- ═══════════ MOBILE DOCK ═══════════ -->
+<div class="lg-dock liquid-glass" id="mobile-dock">
+  <!-- Contact icon -->
+  <a href={`mailto:contact@estato.com`} class="dock-btn d-contact" aria-label={t.nav_contact}>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
+    </svg>
+  </a>
+
+  <div class="lg-sep"></div>
+
+  <!-- Burger Menu -->
+  <button type="button" class="dock-btn d-menu" id="dock-menu-btn" aria-label="Menu">
+    <svg id="dock-burger" style="width:22px;height:22px;transition:opacity 0.3s" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+    </svg>
+    <svg id="dock-close" style="width:22px;height:22px;position:absolute;inset:0;margin:auto;opacity:0;pointer-events:none;transform:rotate(90deg);transition:opacity 0.3s,transform 0.3s" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+
+  <div class="lg-sep"></div>
+
+  <!-- Language Switcher Mobile -->
+  <div class="dock-lang-wrap" id="dock-lang-wrap">
+    <button
+      type="button"
+      id="lang-btn-mobile"
+      class="dock-btn d-lang"
+      aria-label={t.lang_btn_aria}
+      aria-expanded="false"
+    >
+      <span style="font-size:0.65rem;font-weight:700;letter-spacing:0.05em">{langKey.toUpperCase()}</span>
+    </button>
+    <div id="lang-dropdown-mobile" class="lang-dropdown-mobile hidden" role="menu">
+      {Object.entries(languages).map(([key, label]) => (
+        <a
+          href={pathWithoutLang ? `/${key}/${pathWithoutLang}` : `/${key}/`}
+          class={`lang-option-mobile ${key === langKey ? 'active' : ''}`}
+          role="menuitem"
+        >
+          {label}
+        </a>
+      ))}
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MOBILE MENU PANEL ═══════════ -->
+<div class="menu-overlay" id="menu-overlay"></div>
+<div class="menu-panel liquid-glass" id="menu-panel">
+  <div class="mp-header">
+    <span class="mp-logo">ESTATO</span>
+    <button type="button" class="mp-close" id="menu-close-btn" aria-label={t.menu_close}>
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <nav class="mp-nav">
+    <a href={`/${langKey}/#properties`} class="mp-link menu-link">{t.nav_properties}</a>
+    <a href={`/${langKey}/#properties`} class="mp-link menu-link">{t.nav_buy}</a>
+    <a href={`/${langKey}/#properties`} class="mp-link menu-link">{t.nav_rent}</a>
+    <a href={`mailto:contact@estato.com`} class="mp-link menu-link">{t.nav_contact}</a>
+  </nav>
+  <div class="mp-footer">
+    <a href={`mailto:contact@estato.com`} class="liquid-btn primary" style="width:100%;justify-content:center">
+      {t.hero_cta2}
+    </a>
+  </div>
+</div>
+
+<style>
+  /* ══════════ DESKTOP HEADER ══════════ */
+  header {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 400;
+    width: 90%;
+    max-width: 1200px;
+    height: 60px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (max-width: 1023px) {
+    header {
+      display: none;
+    }
+  }
+
+  /* Logo */
+  .logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+  }
+
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.2em;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .logo-dot {
+    color: var(--accent);
+    font-size: 0.45rem;
+    margin-bottom: 2px;
+  }
+
+  /* Desktop nav */
+  .desktop-nav {
+    display: flex;
+    gap: 2.5rem;
+  }
+
+  .desktop-nav a {
+    font-size: 0.6rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--text2);
+    transition: color 0.3s;
+  }
+
+  .desktop-nav a:hover {
+    color: var(--accent);
+  }
+
+  /* Header right */
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* Language btn desktop */
+  .lang-wrap {
+    position: relative;
+  }
+
+  .lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 99px;
+    color: var(--text2);
+    padding: 0.5rem 1rem;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.3s;
+  }
+
+  .lang-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .lang-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 140px;
+    background: var(--bg2);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    z-index: 500;
+  }
+
+  .lang-dropdown.hidden { display: none; }
+
+  .lang-option {
+    display: block;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.75rem;
+    color: var(--text2);
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .lang-option:hover,
+  .lang-option.active {
+    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--accent);
+  }
+
+  /* Header CTA */
+  .header-cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1.4rem;
+    border-radius: 99px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.3s;
+    box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.35);
+  }
+
+  .header-cta:hover {
+    box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.5);
+    transform: translateY(-1px);
+  }
+
+  /* ══════════ MOBILE DOCK ══════════ */
+  .lg-dock {
+    display: none;
+    position: fixed;
+    bottom: calc(1.6rem + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 600;
+    padding: 12px 16px;
+    border-radius: 99px;
+    gap: 10px;
+    align-items: center;
+  }
+
+  @media (max-width: 1023px) {
+    .lg-dock { display: flex; }
+  }
+
+  .dock-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    border: none;
+    overflow: hidden;
+    transition: transform 0.3s;
+    text-decoration: none;
+  }
+
+  .dock-btn:active { transform: scale(0.85); }
+
+  .dock-btn svg {
+    width: 22px;
+    height: 22px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .d-contact {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: #000;
+    box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.4);
+  }
+
+  .d-menu {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: blur(10px);
+    color: var(--text);
+  }
+
+  .d-lang {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: blur(10px);
+    color: var(--text2);
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .lg-sep {
+    width: 1px;
+    height: 28px;
+    background: var(--glass-border);
+  }
+
+  /* Mobile lang dropdown */
+  .dock-lang-wrap { position: relative; }
+
+  .lang-dropdown-mobile {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    right: 0;
+    min-width: 140px;
+    background: var(--bg2);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 -16px 40px rgba(0,0,0,0.5);
+    z-index: 700;
+  }
+
+  .lang-dropdown-mobile.hidden { display: none; }
+
+  .lang-option-mobile {
+    display: block;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.8rem;
+    color: var(--text2);
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .lang-option-mobile:hover,
+  .lang-option-mobile.active {
+    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--accent);
+  }
+
+  /* ══════════ MENU OVERLAY & PANEL ══════════ */
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 700;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+
+  .menu-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .menu-panel {
+    position: fixed;
+    bottom: calc(110px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    z-index: 800;
+    width: min(92vw, 400px);
+    border-radius: 28px;
+    padding: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .menu-panel.open {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .mp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .mp-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+
+  .mp-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .mp-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  .mp-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .mp-link {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--glass-border);
+    transition: color 0.3s, padding-left 0.3s;
+  }
+
+  .mp-link:hover {
+    color: var(--accent);
+    padding-left: 0.5rem;
+  }
+
+  .mp-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    // Desktop lang dropdown
+    var langBtnD = document.getElementById('lang-btn-desktop');
+    var langDropD = document.getElementById('lang-dropdown-desktop');
+
+    if (langBtnD && langDropD) {
+      langBtnD.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var hidden = langDropD.classList.contains('hidden');
+        langDropD.classList.toggle('hidden', !hidden);
+        langBtnD.setAttribute('aria-expanded', String(hidden));
+      });
+      document.addEventListener('click', function() {
+        langDropD.classList.add('hidden');
+        langBtnD.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    // Mobile lang dropdown
+    var langBtnM = document.getElementById('lang-btn-mobile');
+    var langDropM = document.getElementById('lang-dropdown-mobile');
+
+    if (langBtnM && langDropM) {
+      langBtnM.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var hidden = langDropM.classList.contains('hidden');
+        langDropM.classList.toggle('hidden', !hidden);
+        langBtnM.setAttribute('aria-expanded', String(hidden));
+      });
+      document.addEventListener('click', function() {
+        langDropM.classList.add('hidden');
+      });
+    }
+
+    // Mobile menu
+    var overlay = document.getElementById('menu-overlay');
+    var panel = document.getElementById('menu-panel');
+    var dockMenuBtn = document.getElementById('dock-menu-btn');
+    var menuCloseBtn = document.getElementById('menu-close-btn');
+    var burger = document.getElementById('dock-burger');
+    var closeIcon = document.getElementById('dock-close');
+    var menuOpen = false;
+
+    function openMenu() {
+      if (overlay) overlay.classList.add('open');
+      if (panel) panel.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      menuOpen = true;
+      if (burger) burger.style.opacity = '0';
+      if (closeIcon) { closeIcon.style.opacity = '1'; closeIcon.style.pointerEvents = 'auto'; closeIcon.style.transform = 'rotate(0deg)'; }
+    }
+
+    function closeMenu() {
+      if (overlay) overlay.classList.remove('open');
+      if (panel) panel.classList.remove('open');
+      document.body.style.overflow = '';
+      menuOpen = false;
+      if (burger) burger.style.opacity = '1';
+      if (closeIcon) { closeIcon.style.opacity = '0'; closeIcon.style.pointerEvents = 'none'; closeIcon.style.transform = 'rotate(90deg)'; }
+    }
+
+    if (dockMenuBtn) dockMenuBtn.addEventListener('click', function() { menuOpen ? closeMenu() : openMenu(); });
+    if (menuCloseBtn) menuCloseBtn.addEventListener('click', closeMenu);
+    if (overlay) overlay.addEventListener('click', closeMenu);
+
+    document.querySelectorAll('.menu-link').forEach(function(el) {
+      el.addEventListener('click', closeMenu);
+    });
+  })();
+</script>

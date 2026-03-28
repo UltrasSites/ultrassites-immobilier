@@ -1,0 +1,388 @@
+---
+/**
+ * Private admin dashboard — LUXORA tracking analytics.
+ * This page is NOT linked anywhere on the site.
+ * Access: /ultras-ctrl/
+ * Protected by admin key (set ADMIN_KEY env var in Cloudflare, default: luxora-admin-2026)
+ */
+---
+
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="robots" content="noindex, nofollow" />
+        <title>LUXORA Control Panel — Ultras-Sites</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+                font-family: "Segoe UI", system-ui, sans-serif;
+                background: #030303;
+                color: #e0e0e0;
+                min-height: 100vh;
+            }
+            /* ── Login ── */
+            #login-screen {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                background: radial-gradient(ellipse at center, #0a0800 0%, #030303 100%);
+            }
+            #login-box {
+                background: #111;
+                border: 1px solid rgba(201,168,76,0.2);
+                border-radius: 20px;
+                padding: 48px;
+                width: 380px;
+                text-align: center;
+                box-shadow: 0 20px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(201,168,76,0.1);
+            }
+            #login-box h1 {
+                font-size: 1rem;
+                color: #c9a84c;
+                margin-bottom: 8px;
+                letter-spacing: 0.3em;
+                text-transform: uppercase;
+                font-family: "Segoe UI", sans-serif;
+                font-weight: 700;
+            }
+            #login-box p.login-sub {
+                font-size: 12px;
+                color: #555;
+                margin-bottom: 32px;
+                letter-spacing: 0.05em;
+            }
+            #login-box input {
+                width: 100%;
+                padding: 14px 18px;
+                border: 1px solid rgba(201,168,76,0.2);
+                border-radius: 12px;
+                background: rgba(0,0,0,0.4);
+                color: #fff;
+                font-size: 14px;
+                margin-bottom: 16px;
+                outline: none;
+                transition: border-color 0.3s;
+            }
+            #login-box input:focus { border-color: #c9a84c; }
+            #login-box button {
+                width: 100%;
+                padding: 14px;
+                border: 1px solid #c9a84c;
+                border-radius: 12px;
+                background: rgba(201,168,76,0.1);
+                color: #c9a84c;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+                text-transform: uppercase;
+                letter-spacing: 0.2em;
+                transition: background 0.3s;
+            }
+            #login-box button:hover { background: rgba(201,168,76,0.2); }
+            #login-error { color: #ef4444; font-size: 12px; margin-top: 10px; display: none; }
+            .login-logo {
+                font-family: "Arial Black", Arial, sans-serif;
+                font-size: 2.5rem;
+                font-weight: 900;
+                color: #c9a84c;
+                letter-spacing: 0.2em;
+                margin-bottom: 4px;
+            }
+            /* ── Dashboard ── */
+            #dashboard {
+                display: none;
+                padding: 28px;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            .dash-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 32px;
+                flex-wrap: wrap;
+                gap: 16px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid rgba(201,168,76,0.15);
+            }
+            .dash-header h1 {
+                font-size: 20px;
+                color: #c9a84c;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .dash-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+            .dash-controls select,
+            .dash-controls button {
+                padding: 8px 16px;
+                border: 1px solid #333;
+                border-radius: 8px;
+                background: #111;
+                color: #e0e0e0;
+                font-size: 13px;
+                cursor: pointer;
+            }
+            .dash-controls button { border-color: #c9a84c; color: #c9a84c; }
+            .dash-controls button:hover { background: rgba(201,168,76,0.1); }
+            .dash-controls .btn-logout { border-color: #ef4444; color: #ef4444; }
+            .dash-controls .btn-logout:hover { background: rgba(239,68,68,0.1); }
+            /* Stat cards */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 14px;
+                margin-bottom: 28px;
+            }
+            .stat-card {
+                background: #111;
+                border: 1px solid #1a1a1a;
+                border-radius: 14px;
+                padding: 20px;
+            }
+            .stat-card .label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+            .stat-card .value { font-size: 28px; font-weight: 800; color: #fff; }
+            .stat-card .sub { font-size: 11px; color: #555; margin-top: 4px; }
+            .stat-card.highlight {
+                border-color: rgba(201,168,76,0.3);
+                background: linear-gradient(135deg, #0d0b00, #141000);
+            }
+            .stat-card.highlight .value { color: #c9a84c; }
+            /* Tables */
+            .section { margin-bottom: 28px; }
+            .section h2 {
+                font-size: 13px;
+                color: #c9a84c;
+                text-transform: uppercase;
+                letter-spacing: 0.15em;
+                margin-bottom: 14px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid rgba(201,168,76,0.15);
+            }
+            table { width: 100%; border-collapse: collapse; background: #111; border-radius: 12px; overflow: hidden; }
+            th { text-align: left; padding: 12px 16px; font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; background: #0a0a0a; border-bottom: 1px solid #1a1a1a; }
+            td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid #0f0f0f; }
+            tr:hover { background: rgba(201,168,76,0.02); }
+            .bar { height: 6px; background: linear-gradient(90deg, #c9a84c, #8a6d25); border-radius: 3px; min-width: 4px; }
+            .event-log { max-height: 400px; overflow-y: auto; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; }
+            .event-item { display: flex; gap: 12px; padding: 8px 16px; border-bottom: 1px solid #0f0f0f; font-size: 12px; align-items: center; }
+            .event-item:hover { background: rgba(201,168,76,0.02); }
+            .event-type { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+            .event-type.pageview { background: #0f2a1a; color: #4f8; }
+            .event-type.click { background: #2a1a0f; color: #f84; }
+            .event-type.cart { background: #0f1a2a; color: #c9a84c; }
+            .event-type.checkout { background: #2a0f0f; color: #f88; }
+            .event-type.demo { background: #0f1a2a; color: #48f; }
+            .event-time { color: #555; min-width: 60px; }
+            .event-country { min-width: 30px; }
+            .event-page { color: #aaa; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .event-target { color: #c9a84c; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            #loading { text-align: center; padding: 60px; color: #444; }
+            .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+            @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+        </style>
+    </head>
+    <body>
+        <!-- LOGIN -->
+        <div id="login-screen">
+            <div id="login-box">
+                <div class="login-logo">LUXORA</div>
+                <h1>Control Panel</h1>
+                <p class="login-sub">Ultras-Sites Analytics</p>
+                <input type="password" id="admin-key" placeholder="Clé d'accès admin" autocomplete="off" />
+                <button onclick="tryLogin()">Accéder au tableau de bord</button>
+                <p id="login-error">Clé incorrecte</p>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard">
+            <div class="dash-header">
+                <h1>📊 LUXORA Analytics</h1>
+                <div class="dash-controls">
+                    <select id="days-select">
+                        <option value="1">Aujourd'hui</option>
+                        <option value="7" selected>7 jours</option>
+                        <option value="14">14 jours</option>
+                        <option value="30">30 jours</option>
+                        <option value="90">90 jours</option>
+                    </select>
+                    <button onclick="loadStats()">Actualiser</button>
+                    <button class="btn-logout" onclick="logout()">Déconnexion</button>
+                </div>
+            </div>
+            <div id="stats-content">
+                <div id="loading">Chargement des statistiques...</div>
+            </div>
+        </div>
+
+        <script is:inline>
+            var adminKey = "";
+
+            function tryLogin() {
+                adminKey = document.getElementById("admin-key").value;
+                if (!adminKey) return;
+                document.getElementById("login-error").style.display = "none";
+                fetch("/api/stats?key=" + encodeURIComponent(adminKey) + "&days=7")
+                    .then(function(r) {
+                        if (r.status === 401) throw new Error("auth");
+                        if (r.status === 500) throw new Error("kv_missing");
+                        return r.json();
+                    })
+                    .then(function(data) {
+                        if (data.error) {
+                            if (data.error.includes("KV")) throw new Error("kv_missing");
+                            throw new Error("auth");
+                        }
+                        sessionStorage.setItem("luxora-key", adminKey);
+                        document.getElementById("login-screen").style.display = "none";
+                        document.getElementById("dashboard").style.display = "block";
+                        renderStats(data);
+                    })
+                    .catch(function(err) {
+                        var errEl = document.getElementById("login-error");
+                        if (err.message === "kv_missing") {
+                            errEl.textContent = "Erreur : Liaison KV 'TRACKING' manquante dans Cloudflare";
+                        } else {
+                            errEl.textContent = "Clé d'accès incorrecte";
+                        }
+                        errEl.style.display = "block";
+                    });
+            }
+
+            function logout() {
+                sessionStorage.removeItem("luxora-key");
+                adminKey = "";
+                document.getElementById("dashboard").style.display = "none";
+                document.getElementById("login-screen").style.display = "flex";
+                document.getElementById("admin-key").value = "";
+            }
+
+            function loadStats() {
+                var days = document.getElementById("days-select").value;
+                document.getElementById("stats-content").innerHTML = '<div id="loading">Chargement...</div>';
+                fetch("/api/stats?key=" + encodeURIComponent(adminKey) + "&days=" + days)
+                    .then(function(r) { return r.json(); })
+                    .then(renderStats)
+                    .catch(function() {
+                        document.getElementById("stats-content").innerHTML = '<div id="loading" style="color:#ef4444">Erreur de chargement</div>';
+                    });
+            }
+
+            function renderStats(s) {
+                var h = "";
+                h += '<div class="stats-grid">';
+                h += statCard("Total événements", s.total, s.period, true);
+                h += statCard("Pages vues", s.byType.pageview || 0);
+                h += statCard("Clics", s.byType.click || 0);
+                h += statCard("Ajouts panier", s.byType.cart || 0);
+                h += statCard("Checkouts", s.byType.checkout || 0);
+                h += statCard("📱 Mobile", s.byDevice.mobile || 0);
+                h += statCard("🖥 Desktop", s.byDevice.desktop || 0);
+                h += "</div>";
+
+                h += '<div class="two-col">';
+                h += rankTable("🌍 Par pays", s.byCountry, s.total);
+                h += rankTable("🗣 Par langue", s.byLang, s.total);
+                h += "</div>";
+
+                h += '<div class="two-col">';
+                h += rankTable("📄 Pages les plus visitées", s.byPage, s.total);
+                h += rankTable("🔗 Sources de trafic", s.byReferrer, s.total);
+                h += "</div>";
+
+                h += '<div class="two-col">';
+                h += rankTable("🛒 Top produits ajoutés", s.topCarts, s.total);
+                h += rankTable("🖱 Top clics", s.topClicks, s.total);
+                h += "</div>";
+
+                h += '<div class="section"><h2>📅 Événements par jour</h2>';
+                h += dailyTable(s.byDay);
+                h += "</div>";
+
+                h += '<div class="section"><h2>🕐 Derniers événements</h2>';
+                h += eventLog(s.recentEvents || []);
+                h += "</div>";
+
+                document.getElementById("stats-content").innerHTML = h;
+            }
+
+            function statCard(label, value, sub, highlight) {
+                return '<div class="stat-card' + (highlight ? " highlight" : "") + '">' +
+                    '<div class="label">' + label + '</div>' +
+                    '<div class="value">' + value + '</div>' +
+                    (sub ? '<div class="sub">' + sub + '</div>' : '') +
+                    '</div>';
+            }
+
+            function rankTable(title, data, total) {
+                var entries = Object.entries(data || {}).sort(function(a, b) { return b[1] - a[1]; });
+                var html = '<div class="section"><h2>' + title + '</h2><table><tr><th>Nom</th><th>Visites</th><th>%</th><th></th></tr>';
+                entries.slice(0, 15).forEach(function(e) {
+                    var pct = total ? Math.round((e[1] / total) * 100) : 0;
+                    html += "<tr><td>" + escHtml(e[0]) + "</td><td>" + e[1] + "</td><td>" + pct + '%</td><td><div class="bar" style="width:' + Math.max(pct, 2) + '%"></div></td></tr>';
+                });
+                html += "</table></div>";
+                return html;
+            }
+
+            function dailyTable(data) {
+                var entries = Object.entries(data || {}).sort();
+                var maxVal = Math.max.apply(null, entries.map(function(e) { return e[1]; }).concat([1]));
+                var html = "<table><tr><th>Date</th><th>Événements</th><th></th></tr>";
+                entries.forEach(function(e) {
+                    var pct = Math.round((e[1] / maxVal) * 100);
+                    html += "<tr><td>" + e[0] + "</td><td>" + e[1] + '</td><td><div class="bar" style="width:' + pct + '%"></div></td></tr>';
+                });
+                return html + "</table>";
+            }
+
+            function eventLog(events) {
+                if (!events.length) return '<div class="event-log" style="padding:24px;text-align:center;color:#555">Aucun événement récent</div>';
+                var html = '<div class="event-log">';
+                events.forEach(function(e) {
+                    var time = new Date(e.ts).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+                    var flag = countryFlag(e.country);
+                    html += '<div class="event-item">' +
+                        '<span class="event-type ' + e.type + '">' + e.type + '</span>' +
+                        '<span class="event-time">' + time + '</span>' +
+                        '<span class="event-country">' + flag + '</span>' +
+                        '<span class="event-page">' + escHtml(e.page) + '</span>' +
+                        (e.target ? '<span class="event-target">' + escHtml(e.target) + '</span>' : '') +
+                        '</div>';
+                });
+                return html + '</div>';
+            }
+
+            function countryFlag(code) {
+                if (!code || code.length !== 2) return "🌐";
+                var a = 0x1f1e6;
+                return String.fromCodePoint(a + code.charCodeAt(0) - 65, a + code.charCodeAt(1) - 65);
+            }
+
+            function escHtml(s) {
+                var d = document.createElement("div");
+                d.textContent = s || "";
+                return d.innerHTML;
+            }
+
+            // Auto-login from session
+            (function() {
+                var saved = sessionStorage.getItem("luxora-key");
+                if (saved) {
+                    adminKey = saved;
+                    document.getElementById("admin-key").value = saved;
+                    tryLogin();
+                }
+                document.getElementById("admin-key").addEventListener("keydown", function(e) {
+                    if (e.key === "Enter") tryLogin();
+                });
+            })();
+        </script>
+    </body>
+</html>
