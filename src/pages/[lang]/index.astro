@@ -274,6 +274,13 @@ const properties = [
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    padding-top: 10vh; /* space for mobile header */
+  }
+
+  @media (min-width: 768px) {
+    .hero-section {
+      padding-top: 0;
+    }
   }
 
   /* ── BACKGROUND SLIDESHOW ── */
@@ -371,15 +378,10 @@ const properties = [
 
   /* ── HERO BRAND (ESTATO large logo in top space) ── */
   .hero-brand-wrap {
-    top: 5vh;
+    top: 7vh;
     left: 0;
     right: 0;
-    z-index: 1; /* behind vignette and dark overlays but above the background imgs */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    pointer-events: none;
-  }
+    z-index: 1;
 
   @media (min-width: 768px) {
     .hero-brand-wrap {
@@ -621,7 +623,7 @@ const properties = [
     border-radius: 20px;
     overflow: hidden;
     margin-top: clamp(1rem, 3vh, 2.5rem);
-    margin-bottom: calc(80px + env(safe-area-inset-bottom)); /* clear mobile dock */
+    margin-bottom: calc(20px + env(safe-area-inset-bottom)); /* reduced to improve centering */
   }
 
   .stat-item {
