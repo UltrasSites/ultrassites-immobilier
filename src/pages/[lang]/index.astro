@@ -274,7 +274,6 @@ const properties = [
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    padding: 2rem 0;
   }
 
   /* ── BACKGROUND SLIDESHOW ── */
@@ -372,11 +371,10 @@ const properties = [
 
   /* ── HERO BRAND (ESTATO large logo in top space) ── */
   .hero-brand-wrap {
-    position: absolute;
-    top: max(0.75rem, env(safe-area-inset-top, 0.75rem));
+    top: 5vh;
     left: 0;
     right: 0;
-    z-index: 3;
+    z-index: 1; /* behind vignette and dark overlays but above the background imgs */
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -385,7 +383,7 @@ const properties = [
 
   @media (min-width: 768px) {
     .hero-brand-wrap {
-      top: 6rem;
+      top: 10vh;
     }
   }
 
@@ -397,12 +395,11 @@ const properties = [
 
   .hero-brand-name {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2rem, 6vw, 5rem);
-    letter-spacing: 0.15em;
+    font-size: clamp(3rem, 15vw, 15rem);
+    letter-spacing: 0.05em;
     color: var(--text);
-    opacity: 0.65;
-    text-shadow: 0 0 60px rgba(201,168,76,0.15), 0 4px 40px rgba(0,0,0,0.7);
-    line-height: 0.8;
+    opacity: 0.08;
+    line-height: 1;
   }
 
   .hero-brand-dot {
@@ -423,7 +420,7 @@ const properties = [
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: clamp(2rem, 6vh, 4rem);
+    gap: clamp(1.5rem, 4vh, 2.5rem);
     text-align: center;
   }
 
@@ -447,7 +444,7 @@ const properties = [
     align-items: center;
     justify-content: center;
     gap: 1.2rem;
-    margin-bottom: clamp(1.2rem, 4vh, 2rem);
+    margin-bottom: clamp(1rem, 2.5vh, 1.5rem);
   }
 
   .pretitle-dot {
@@ -470,11 +467,11 @@ const properties = [
     display: flex;
     flex-direction: column;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2rem, 7vw, 4.5rem);
-    line-height: 1.05;
-    letter-spacing: 0.01em;
-    margin-bottom: clamp(1.2rem, 4vh, 2.5rem);
-    text-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    font-size: clamp(1.8rem, 6vw, 3.8rem);
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    margin-bottom: clamp(1rem, 3vh, 2rem);
+    text-shadow: 0 4px 60px rgba(0,0,0,0.6);
   }
 
   .hero-line {
@@ -488,7 +485,7 @@ const properties = [
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    margin-bottom: clamp(1.2rem, 4vh, 2.5rem);
+    margin-bottom: clamp(1.2rem, 3vh, 2rem);
   }
 
   .divider-line {
@@ -514,7 +511,7 @@ const properties = [
     color: rgba(245,245,248,0.75);
     line-height: 1.6;
     font-weight: 300;
-    margin-bottom: clamp(2rem, 6vh, 4rem);
+    margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
     max-width: 540px;
     margin-left: auto;
     margin-right: auto;
@@ -623,7 +620,8 @@ const properties = [
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 20px;
     overflow: hidden;
-    margin-top: clamp(1rem, 4vh, 3rem);
+    margin-top: clamp(1rem, 3vh, 2.5rem);
+    margin-bottom: calc(80px + env(safe-area-inset-bottom)); /* clear mobile dock */
   }
 
   .stat-item {
