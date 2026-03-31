@@ -22,7 +22,7 @@ const alternateLinks = Object.keys(languages).map((l) => ({
 ---
 
 <!doctype html>
-<html lang={langKey} data-theme="dark">
+<html lang={langKey} data-theme="dark" id="html-root">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -88,20 +88,54 @@ const alternateLinks = Object.keys(languages).map((l) => ({
       }
 
       /* ══════════ EMERALD ESTATE THEME (Deep Green Luxury) ══════════ */
-      [data-theme="light"] {
-        --bg: #071a10; /* Deep emerald forest */
+      [data-theme="emerald"] {
+        --bg: #071a10;
         --bg2: #0d2518;
         --bg3: #133020;
-        --accent: #e8b84b; /* Warm gold accent */
+        --accent: #e8b84b;
         --accent-rgb: 232, 184, 75;
         --accent-dark: #b88c28;
-        --text: #e8f5ed; /* Soft sage white */
+        --text: #e8f5ed;
         --text2: #8ab89a;
         --text3: #5a8a6a;
         --glass-bg: rgba(7, 26, 16, 0.55);
         --glass-border: rgba(232, 184, 75, 0.12);
         --glass-shine: rgba(232, 184, 75, 0.18);
         --hero-overlay: rgba(7, 26, 16, 0.6);
+      }
+
+      /* ══════════ BORDEAUX ESTATE THEME (Wine & Gold Luxury) ══════════ */
+      [data-theme="bordeaux"] {
+        --bg: #1a0810;
+        --bg2: #260d18;
+        --bg3: #331220;
+        --accent: #d4a853;
+        --accent-rgb: 212, 168, 83;
+        --accent-dark: #9a7530;
+        --text: #f5edf0;
+        --text2: #c09aaa;
+        --text3: #8a6a78;
+        --glass-bg: rgba(26, 8, 16, 0.58);
+        --glass-border: rgba(212, 168, 83, 0.12);
+        --glass-shine: rgba(212, 168, 83, 0.18);
+        --hero-overlay: rgba(26, 8, 16, 0.65);
+      }
+
+      /* ══════════ SLATE PRESTIGE THEME (Charcoal & Silver Luxury) ══════════ */
+      [data-theme="slate"] {
+        --bg: #0e1218;
+        --bg2: #151c25;
+        --bg3: #1c2530;
+        --accent: #b8c8d8;
+        --accent-rgb: 184, 200, 216;
+        --accent-dark: #8090a0;
+        --text: #e8eef4;
+        --text2: #8898aa;
+        --text3: #586878;
+        --glass-bg: rgba(14, 18, 24, 0.6);
+        --glass-border: rgba(184, 200, 216, 0.1);
+        --glass-shine: rgba(184, 200, 216, 0.15);
+        --hero-overlay: rgba(14, 18, 24, 0.65);
       }
 
       /* ══════════ RESET & BASE ══════════ */
