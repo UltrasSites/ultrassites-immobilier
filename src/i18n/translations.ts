@@ -53,10 +53,11 @@ export const translations: Record<string, Record<string, string>> = {
     footer_tagline: 'L\'immobilier de luxe redéfini.',
     footer_contact: 'contact@estato.com',
     footer_rights: '© 2026 ESTATO. Tous droits réservés.',
-    footer_by: 'Site créé par',
-
     lang_btn_aria: 'Changer de langue',
     menu_close: 'Fermer le menu',
+    theme_toggle: 'Changer le thème',
+    theme_light: 'Mode Clair',
+    theme_dark: 'Mode Sombre',
   },
 
   en: {
@@ -110,6 +111,9 @@ export const translations: Record<string, Record<string, string>> = {
 
     lang_btn_aria: 'Change language',
     menu_close: 'Close menu',
+    theme_toggle: 'Toggle theme',
+    theme_light: 'Light Mode',
+    theme_dark: 'Dark Mode',
   },
 
   es: {
@@ -163,11 +167,14 @@ export const translations: Record<string, Record<string, string>> = {
 
     lang_btn_aria: 'Cambiar idioma',
     menu_close: 'Cerrar menú',
+    theme_toggle: 'Cambiar tema',
+    theme_light: 'Modo Claro',
+    theme_dark: 'Modo Oscuro',
   },
 
   pt: {
     meta_title: 'ESTATO — Imobiliária Premium | Propriedades de Luxo',
-    meta_description: 'ESTATO, a sua agência imobiliária premium. Descubra a nossa seleção exclusiva de villas, apartamentos e propriedades de luxo na Europa. Serviço personalizado, qualidade garantida.',
+    meta_description: 'ESTATO, a sua agência imobiliária premium. Descubra a nossa seleção exclusiva de villas, apartamentos e propriedades de luxo na Europa. Serviço personalizado, qualidade garantizada.',
 
     nav_properties: 'Propriedades',
     nav_buy: 'Comprar',
@@ -216,5 +223,8 @@ export const translations: Record<string, Record<string, string>> = {
 
     lang_btn_aria: 'Mudar idioma',
     menu_close: 'Fechar menu',
+    theme_toggle: 'Alterar tema',
+    theme_light: 'Modo Claro',
+    theme_dark: 'Modo Escuro',
   },
 };

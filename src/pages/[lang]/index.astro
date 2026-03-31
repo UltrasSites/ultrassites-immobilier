@@ -316,7 +316,7 @@ const properties = [
   .hero-vignette {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, transparent 40%, rgba(1,2,8,0.65) 100%);
+    background: radial-gradient(ellipse at center, transparent 40%, var(--hero-overlay) 100%);
     z-index: 1;
   }
 
@@ -327,17 +327,17 @@ const properties = [
     z-index: 2;
     background:
       linear-gradient(to bottom,
-        rgba(1,2,8,0.6) 0%,
-        rgba(1,2,8,0.2) 30%,
-        rgba(1,2,8,0.2) 55%,
-        rgba(1,2,8,0.85) 85%,
-        rgba(1,2,8,1) 100%
+        rgba(var(--accent-rgb), 0.1) 0%,
+        transparent 30%,
+        transparent 55%,
+        var(--hero-overlay) 85%,
+        var(--bg) 100%
       ),
       linear-gradient(to right,
-        rgba(1,2,8,0.3) 0%,
+        var(--hero-overlay) 0%,
         transparent 30%,
         transparent 70%,
-        rgba(1,2,8,0.3) 100%
+        var(--hero-overlay) 100%
       );
   }
 
@@ -514,7 +514,7 @@ const properties = [
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-size: clamp(1rem, 2vw, 1.2rem);
-    color: rgba(245,245,248,0.75);
+    color: var(--text2);
     line-height: 1.6;
     font-weight: 300;
     margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
@@ -620,10 +620,10 @@ const properties = [
     display: flex;
     align-items: stretch;
     gap: 0;
-    background: rgba(10, 12, 25, 0.4);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur) saturate(180%);
+    -webkit-backdrop-filter: var(--glass-blur) saturate(180%);
+    border: 1px solid var(--glass-border);
     border-radius: 20px;
     overflow: hidden;
     margin-top: clamp(1rem, 3vh, 2.5rem);

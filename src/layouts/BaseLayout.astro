@@ -27,7 +27,7 @@ const alternateLinks = Object.keys(languages).map((l) => ({
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#010208" />
+    <meta name="theme-color" content="#071a10" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href={canonicalURL} />
     <title>{title}</title>
@@ -63,6 +63,15 @@ const alternateLinks = Object.keys(languages).map((l) => ({
          ESTATO — DARK LUXURY REAL ESTATE
       ══════════════════════════════════════ */
       :root {
+        /* Common tokens */
+        --radius-card: 20px;
+        --radius-btn: 999px;
+        --transition-spring: cubic-bezier(0.22, 1, 0.36, 1);
+        --glass-blur: blur(24px);
+      }
+
+      /* ══════════ DARK LUXURY THEME ══════════ */
+      [data-theme="dark"] {
         --bg: #010208;
         --bg2: #060810;
         --bg3: #0d1020;
@@ -75,10 +84,24 @@ const alternateLinks = Object.keys(languages).map((l) => ({
         --glass-bg: rgba(10, 12, 25, 0.5);
         --glass-border: rgba(255, 255, 255, 0.07);
         --glass-shine: rgba(255, 255, 255, 0.12);
-        --glass-blur: blur(24px);
-        --radius-card: 20px;
-        --radius-btn: 999px;
-        --transition-spring: cubic-bezier(0.22, 1, 0.36, 1);
+        --hero-overlay: rgba(1, 2, 8, 0.65);
+      }
+
+      /* ══════════ EMERALD ESTATE THEME (Deep Green Luxury) ══════════ */
+      [data-theme="light"] {
+        --bg: #071a10; /* Deep emerald forest */
+        --bg2: #0d2518;
+        --bg3: #133020;
+        --accent: #e8b84b; /* Warm gold accent */
+        --accent-rgb: 232, 184, 75;
+        --accent-dark: #b88c28;
+        --text: #e8f5ed; /* Soft sage white */
+        --text2: #8ab89a;
+        --text3: #5a8a6a;
+        --glass-bg: rgba(7, 26, 16, 0.55);
+        --glass-border: rgba(232, 184, 75, 0.12);
+        --glass-shine: rgba(232, 184, 75, 0.18);
+        --hero-overlay: rgba(7, 26, 16, 0.6);
       }
 
       /* ══════════ RESET & BASE ══════════ */
