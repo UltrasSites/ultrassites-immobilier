@@ -60,6 +60,31 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
       </div>
     </div>
 
+    <!-- Desktop Theme Switcher -->
+    <div class="desktop-theme-wrap" id="desktop-theme-wrap">
+      <button type="button" class="desktop-theme-btn" id="desktop-theme-btn" aria-label="Changer de thème">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a10 10 0 0 1 0 20V2z" fill="currentColor" stroke="none" opacity="0.3"/>
+          <circle cx="12" cy="12" r="3" fill="currentColor"/>
+        </svg>
+      </button>
+      <div id="desktop-theme-picker" class="desktop-theme-picker hidden" role="menu">
+        <button class="dt-swatch" data-dt-theme="dark" aria-label="Navy Dark" title="Navy Dark">
+          <span class="dt-dot" style="background:linear-gradient(135deg,#05111f,#c9a84c)"></span>
+        </button>
+        <button class="dt-swatch" data-dt-theme="emerald" aria-label="Emerald" title="Emerald">
+          <span class="dt-dot" style="background:linear-gradient(135deg,#071a10,#e8b84b)"></span>
+        </button>
+        <button class="dt-swatch" data-dt-theme="bordeaux" aria-label="Bordeaux" title="Bordeaux">
+          <span class="dt-dot" style="background:linear-gradient(135deg,#1a0810,#d4a853)"></span>
+        </button>
+        <button class="dt-swatch" data-dt-theme="slate" aria-label="Slate" title="Slate">
+          <span class="dt-dot" style="background:linear-gradient(135deg,#0e1218,#b8c8d8)"></span>
+        </button>
+      </div>
+    </div>
+
     <!-- Contact CTA -->
     <a href={`mailto:contact@estato.com`} class="header-cta">
       {t.nav_contact}
@@ -170,6 +195,35 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
     <a href={`/${langKey}/#properties`} class="mp-link menu-link">{t.nav_rent}</a>
     <a href={`mailto:contact@estato.com`} class="mp-link menu-link">{t.nav_contact}</a>
   </nav>
+
+  <!-- Language switcher inside menu -->
+  <div class="mp-lang-grid">
+    {Object.entries(languages).map(([key, label]) => (
+      <a
+        href={pathWithoutLang ? `/${key}/${pathWithoutLang}` : `/${key}/`}
+        class={`mp-lang-item ${key === langKey ? 'active' : ''}`}
+      >
+        {label}
+      </a>
+    ))}
+  </div>
+
+  <!-- Theme switcher inside menu -->
+  <div class="mp-theme-row">
+    <button class="mp-theme-swatch" data-theme-name="dark" aria-label="Navy Dark" title="Navy Dark">
+      <span class="swatch-dot" style="background:linear-gradient(135deg,#05111f,#c9a84c)"></span>
+    </button>
+    <button class="mp-theme-swatch" data-theme-name="emerald" aria-label="Emerald" title="Emerald">
+      <span class="swatch-dot" style="background:linear-gradient(135deg,#071a10,#e8b84b)"></span>
+    </button>
+    <button class="mp-theme-swatch" data-theme-name="bordeaux" aria-label="Bordeaux" title="Bordeaux">
+      <span class="swatch-dot" style="background:linear-gradient(135deg,#1a0810,#d4a853)"></span>
+    </button>
+    <button class="mp-theme-swatch" data-theme-name="slate" aria-label="Slate" title="Slate">
+      <span class="swatch-dot" style="background:linear-gradient(135deg,#0e1218,#b8c8d8)"></span>
+    </button>
+  </div>
+
   <div class="mp-footer">
     <a href={`mailto:contact@estato.com`} class="liquid-btn primary" style="width:100%;justify-content:center">
       {t.hero_cta2}
@@ -511,17 +565,89 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
     color: var(--accent);
   }
 
+  /* ══════════ DESKTOP THEME SWITCHER ══════════ */
+  .desktop-theme-wrap {
+    position: relative;
+  }
+
+  .desktop-theme-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .desktop-theme-btn:hover {
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.1);
+  }
+
+  .desktop-theme-picker {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--bg2);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 0.6rem;
+    display: flex;
+    gap: 0.5rem;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    z-index: 600;
+  }
+
+  .desktop-theme-picker.hidden { display: none; }
+
+  .dt-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dt-swatch:hover {
+    transform: scale(1.15);
+  }
+
+  .dt-swatch.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.4);
+  }
+
+  .dt-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: block;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
   /* ══════════ MENU OVERLAY & PANEL ══════════ */
   .menu-overlay {
     position: fixed;
     inset: 0;
     z-index: 700;
-    background: var(--hero-overlay);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s;
+    transition: opacity 0.3s ease;
   }
 
   .menu-overlay.open {
@@ -609,6 +735,76 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
     flex-direction: column;
     gap: 1rem;
   }
+
+  /* Language grid inside menu panel */
+  .mp-lang-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .mp-lang-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--text2);
+    background: var(--glass-bg);
+    transition: all 0.25s;
+  }
+
+  .mp-lang-item:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .mp-lang-item.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.08);
+  }
+
+  /* Theme dots row inside menu panel */
+  .mp-theme-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem;
+    border-radius: 14px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+  }
+
+  .mp-theme-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mp-theme-swatch:hover {
+    transform: scale(1.15);
+  }
+
+  .mp-theme-swatch.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.4);
+  }
 </style>
 
 <script is:inline>
@@ -665,7 +861,15 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
     }
 
     function closeMenu() {
-      if (overlay) overlay.classList.remove('open');
+      // Restore panel transition and transform before closing
+      if (panel) {
+        panel.style.transition = '';
+        panel.style.transform = '';
+      }
+      if (overlay) {
+        overlay.style.opacity = '';
+        overlay.classList.remove('open');
+      }
       if (panel) panel.classList.remove('open');
       document.body.style.overflow = '';
       menuOpen = false;
@@ -681,55 +885,130 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
       el.addEventListener('click', closeMenu);
     });
 
-    // Swipe-down gesture on menu panel to close
-    var touchStartY = 0;
-    var touchStartX = 0;
+    // ── REAL-TIME SWIPE-DOWN GESTURE with visual feedback ──
+    var swipeStartY = 0;
+    var swipeStartX = 0;
+    var swipeT0 = 0;
+
     if (panel) {
       panel.addEventListener('touchstart', function(e) {
-        touchStartY = e.touches[0].clientY;
-        touchStartX = e.touches[0].clientX;
+        swipeStartY = e.touches[0].clientY;
+        swipeStartX = e.touches[0].clientX;
+        swipeT0 = Date.now();
+        // Disable CSS transition while dragging for real-time response
+        panel.style.transition = 'none';
       }, { passive: true });
+
+      panel.addEventListener('touchmove', function(e) {
+        var dy = e.touches[0].clientY - swipeStartY;
+        var dx = Math.abs(e.touches[0].clientX - swipeStartX);
+        // Only act on downward swipe, not horizontal
+        if (dy > 0 && dx < 60) {
+          // Move panel down in real time
+          panel.style.transform = 'translateX(-50%) translateY(' + dy + 'px)';
+          // Fade overlay proportionally
+          if (overlay) {
+            var alpha = Math.max(0, 1 - dy / 300);
+            overlay.style.opacity = String(alpha);
+          }
+        }
+      }, { passive: true });
+
       panel.addEventListener('touchend', function(e) {
-        var dy = e.changedTouches[0].clientY - touchStartY;
-        var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
-        if (dy > 60 && dx < 60) closeMenu();
+        var dy = e.changedTouches[0].clientY - swipeStartY;
+        var dx = Math.abs(e.changedTouches[0].clientX - swipeStartX);
+        var elapsed = Date.now() - swipeT0;
+        var velocity = elapsed > 0 ? dy / elapsed : 0;
+
+        if (dy > 0 && dx < 60 && (velocity > 0.45 || dy > 80)) {
+          // Fast enough or far enough — close
+          if (navigator.vibrate) navigator.vibrate(15);
+          closeMenu();
+        } else {
+          // Snap back
+          panel.style.transition = '';
+          panel.style.transform = '';
+          if (overlay) overlay.style.opacity = '';
+        }
       }, { passive: true });
     }
 
-    // Theme Picker Logic
+    // ── THEME PICKER LOGIC ──
     var themeDockBtn = document.getElementById('theme-dock-btn');
     var themePicker = document.getElementById('theme-picker');
     var themeSwatches = document.querySelectorAll('.theme-swatch');
+    var mpThemeSwatches = document.querySelectorAll('.mp-theme-swatch');
+
+    // Desktop theme picker
+    var desktopThemeBtn = document.getElementById('desktop-theme-btn');
+    var desktopThemePicker = document.getElementById('desktop-theme-picker');
+    var dtSwatches = document.querySelectorAll('.dt-swatch');
 
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme-estato', theme);
+      localStorage.setItem('immo-theme', theme);
+      // Sync all swatch sets
       themeSwatches.forEach(function(s) {
         s.classList.toggle('active', s.getAttribute('data-theme-name') === theme);
       });
+      mpThemeSwatches.forEach(function(s) {
+        s.classList.toggle('active', s.getAttribute('data-theme-name') === theme);
+      });
+      dtSwatches.forEach(function(s) {
+        s.classList.toggle('active', s.getAttribute('data-dt-theme') === theme);
+      });
     }
 
+    // Mobile dock theme picker
     if (themeDockBtn && themePicker) {
       themeDockBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         themePicker.classList.toggle('hidden');
-      });
-      document.addEventListener('click', function() {
-        themePicker.classList.add('hidden');
+        if (desktopThemePicker) desktopThemePicker.classList.add('hidden');
       });
       themePicker.addEventListener('click', function(e) { e.stopPropagation(); });
     }
 
     themeSwatches.forEach(function(swatch) {
       swatch.addEventListener('click', function() {
-        var theme = swatch.getAttribute('data-theme-name');
-        applyTheme(theme);
-        themePicker.classList.add('hidden');
+        applyTheme(swatch.getAttribute('data-theme-name'));
+        if (themePicker) themePicker.classList.add('hidden');
       });
     });
 
-    // Initial load
-    var savedTheme = localStorage.getItem('theme-estato') || 'dark';
+    // In-menu panel theme swatches
+    mpThemeSwatches.forEach(function(swatch) {
+      swatch.addEventListener('click', function(e) {
+        e.stopPropagation();
+        applyTheme(swatch.getAttribute('data-theme-name'));
+      });
+    });
+
+    // Desktop theme picker
+    if (desktopThemeBtn && desktopThemePicker) {
+      desktopThemeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        desktopThemePicker.classList.toggle('hidden');
+        if (themePicker) themePicker.classList.add('hidden');
+      });
+      desktopThemePicker.addEventListener('click', function(e) { e.stopPropagation(); });
+    }
+
+    dtSwatches.forEach(function(swatch) {
+      swatch.addEventListener('click', function() {
+        applyTheme(swatch.getAttribute('data-dt-theme'));
+        if (desktopThemePicker) desktopThemePicker.classList.add('hidden');
+      });
+    });
+
+    // Close all pickers on outside click
+    document.addEventListener('click', function() {
+      if (themePicker) themePicker.classList.add('hidden');
+      if (desktopThemePicker) desktopThemePicker.classList.add('hidden');
+    });
+
+    // Initial load — restore theme from localStorage
+    var savedTheme = localStorage.getItem('immo-theme') || localStorage.getItem('theme-estato') || 'dark';
     applyTheme(savedTheme);
   })();
 </script>
