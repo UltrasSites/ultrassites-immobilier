@@ -895,18 +895,15 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
         swipeStartY = e.touches[0].clientY;
         swipeStartX = e.touches[0].clientX;
         swipeT0 = Date.now();
-        // Disable CSS transition while dragging for real-time response
         panel.style.transition = 'none';
       }, { passive: true });
 
       panel.addEventListener('touchmove', function(e) {
         var dy = e.touches[0].clientY - swipeStartY;
         var dx = Math.abs(e.touches[0].clientX - swipeStartX);
-        // Only act on downward swipe, not horizontal
+        // Swipe naturel : bas
         if (dy > 0 && dx < 60) {
-          // Move panel down in real time
           panel.style.transform = 'translateX(-50%) translateY(' + dy + 'px)';
-          // Fade overlay proportionally
           if (overlay) {
             var alpha = Math.max(0, 1 - dy / 300);
             overlay.style.opacity = String(alpha);
@@ -921,11 +918,8 @@ const pathWithoutLang = pathSegments.slice(1).join('/') || '';
         var velocity = elapsed > 0 ? dy / elapsed : 0;
 
         if (dy > 0 && dx < 60 && (velocity > 0.45 || dy > 80)) {
-          // Fast enough or far enough — close
-          if (navigator.vibrate) navigator.vibrate(15);
           closeMenu();
         } else {
-          // Snap back
           panel.style.transition = '';
           panel.style.transform = '';
           if (overlay) overlay.style.opacity = '';
