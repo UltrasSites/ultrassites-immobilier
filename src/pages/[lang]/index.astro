@@ -555,9 +555,11 @@ const properties = [
 
   .hero-line {
     display: block;
-    color: transparent;
-    -webkit-text-stroke: 1.5px var(--accent);
-    text-shadow: none;
+    color: #ffffff;
+    -webkit-text-stroke: 0;
+    text-shadow:
+      0 2px 12px rgba(0, 0, 0, 0.6),
+      0 1px 3px rgba(0, 0, 0, 0.8);
   }
 
   /* Gold divider */
@@ -589,7 +591,7 @@ const properties = [
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-size: clamp(1rem, 2vw, 1.2rem);
-    color: var(--text2);
+    color: rgba(255, 255, 255, 0.92);
     line-height: 1.6;
     font-weight: 300;
     margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
@@ -597,6 +599,7 @@ const properties = [
     margin-left: auto;
     margin-right: auto;
     letter-spacing: 0.02em;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
   }
 
   .hero-btns {
@@ -706,9 +709,12 @@ const properties = [
   .hero-line-accent {
     animation: lineReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.85s both,
                shimmer 4s linear 1.8s infinite;
-    color: var(--text);
+    color: var(--accent);
     -webkit-text-stroke: 0;
     text-stroke: 0;
+    text-shadow:
+      0 2px 16px rgba(0, 0, 0, 0.6),
+      0 0 30px rgba(201, 168, 76, 0.3);
     background: linear-gradient(90deg, var(--accent-dark), var(--accent) 30%, #f5d98b 50%, var(--accent) 70%, var(--accent-dark));
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -783,7 +789,8 @@ const properties = [
     font-size: 0.52rem;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.85);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     font-family: 'Outfit', sans-serif;
     white-space: nowrap;
   }
