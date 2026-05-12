@@ -14,12 +14,17 @@ const t = (translations as Record<string, Record<string, string>>)[langKey] || {
 
 const heroLines = t.hero_title ? t.hero_title.split('\n') : ['ESTATO'];
 
+// Format number per locale (1 250 000 / 1,250,000 / etc.)
+const localeMap: Record<string, string> = { fr: 'fr-FR', en: 'en-US', es: 'es-ES', pt: 'pt-PT' };
+const numLocale = localeMap[langKey] || 'fr-FR';
+const fmt = (n: number) => new Intl.NumberFormat(numLocale).format(n);
+
 const properties = [
   {
     slug: 'villa-moderne-cote-azur',
-    title: 'Villa Moderne — Côte d\'Azur',
-    location: 'Nice, France',
-    price: '1 250 000 €',
+    title: t.prop1_title,
+    location: t.prop1_loc,
+    price: `${fmt(1250000)} €`,
     beds: 5,
     baths: 3,
     sqm: 320,
@@ -28,9 +33,9 @@ const properties = [
   },
   {
     slug: 'appartement-haussmannien-paris',
-    title: 'Appartement Haussmannien',
-    location: 'Paris 8e, France',
-    price: '890 000 €',
+    title: t.prop2_title,
+    location: t.prop2_loc,
+    price: `${fmt(890000)} €`,
     beds: 3,
     baths: 2,
     sqm: 145,
@@ -39,9 +44,9 @@ const properties = [
   },
   {
     slug: 'penthouse-vue-mer-barcelone',
-    title: 'Penthouse Vue Mer',
-    location: 'Barcelone, Espagne',
-    price: '2 100 €/mois',
+    title: t.prop3_title,
+    location: t.prop3_loc,
+    price: `${fmt(2100)} €${t.prop_per_month}`,
     beds: 2,
     baths: 2,
     sqm: 110,
@@ -50,9 +55,9 @@ const properties = [
   },
   {
     slug: 'villa-contemporaine-geneve',
-    title: 'Villa Contemporaine',
-    location: 'Genève, Suisse',
-    price: '3 400 000 CHF',
+    title: t.prop4_title,
+    location: t.prop4_loc,
+    price: `${fmt(3400000)} CHF`,
     beds: 6,
     baths: 4,
     sqm: 480,
@@ -61,9 +66,9 @@ const properties = [
   },
   {
     slug: 'appartement-vue-tage-lisbonne',
-    title: 'Appartement Vue Tage',
-    location: 'Lisbonne, Portugal',
-    price: '650 000 €',
+    title: t.prop5_title,
+    location: t.prop5_loc,
+    price: `${fmt(650000)} €`,
     beds: 2,
     baths: 1,
     sqm: 98,
@@ -72,9 +77,9 @@ const properties = [
   },
   {
     slug: 'villa-piscine-marbella',
-    title: 'Villa Piscine — Marbella',
-    location: 'Marbella, Espagne',
-    price: '1 800 000 €',
+    title: t.prop6_title,
+    location: t.prop6_loc,
+    price: `${fmt(1800000)} €`,
     beds: 5,
     baths: 4,
     sqm: 380,
@@ -204,6 +209,71 @@ const properties = [
         {properties.map((property) => (
           <div class="property-item" data-badge={property.badge}>
             <PropertyCard property={property} lang={langKey} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════
+       AGENCY SECTION
+  ═══════════════════════════════════ -->
+  <section class="agency-section">
+    <div class="section-wrap">
+      <div class="agency-grid">
+        <div class="agency-text fade-up">
+          <p class="eyebrow">{t.agency_eyebrow}</p>
+          <h2 class="agency-title">{t.agency_title}</h2>
+          <p class="agency-lead">{t.agency_lead}</p>
+          <div class="agency-stats">
+            <div class="agency-stat"><span class="agency-stat-n">{t.agency_stat1_n}</span><span class="agency-stat-l">{t.agency_stat1_l}</span></div>
+            <div class="agency-stat-sep"></div>
+            <div class="agency-stat"><span class="agency-stat-n">{t.agency_stat2_n}</span><span class="agency-stat-l">{t.agency_stat2_l}</span></div>
+            <div class="agency-stat-sep"></div>
+            <div class="agency-stat"><span class="agency-stat-n">{t.agency_stat3_n}</span><span class="agency-stat-l">{t.agency_stat3_l}</span></div>
+          </div>
+        </div>
+        <div class="agency-values fade-up">
+          {[
+            { title: t.agency_value1_title, desc: t.agency_value1_desc, icon: '◈' },
+            { title: t.agency_value2_title, desc: t.agency_value2_desc, icon: '◇' },
+            { title: t.agency_value3_title, desc: t.agency_value3_desc, icon: '◆' },
+          ].map(v => (
+            <div class="agency-value-card">
+              <span class="agency-value-icon">{v.icon}</span>
+              <div>
+                <p class="agency-value-title">{v.title}</p>
+                <p class="agency-value-desc">{v.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════
+       PROCESS SECTION
+  ═══════════════════════════════════ -->
+  <section class="process-section">
+    <div class="section-wrap">
+      <div class="section-header fade-up" style="text-align:center;margin-bottom:3rem">
+        <p class="eyebrow" style="justify-content:center">{t.process_eyebrow}</p>
+        <h2 class="process-title">{t.process_title}</h2>
+      </div>
+      <div class="process-steps">
+        {[
+          { n: t.process_step1_n, title: t.process_step1_title, desc: t.process_step1_desc },
+          { n: t.process_step2_n, title: t.process_step2_title, desc: t.process_step2_desc },
+          { n: t.process_step3_n, title: t.process_step3_title, desc: t.process_step3_desc },
+        ].map((step, i) => (
+          <div class={`process-step fade-up`} style={`animation-delay:${i * 0.15}s`}>
+            <div class="process-step-inner">
+              <span class="process-step-n">{step.n}</span>
+              <div class="process-step-line" aria-hidden="true"></div>
+              <h3 class="process-step-title">{step.title}</h3>
+              <p class="process-step-desc">{step.desc}</p>
+            </div>
           </div>
         ))}
       </div>
@@ -870,6 +940,36 @@ const properties = [
   /* ══════════════════════════════════════
      CTA SECTION
   ══════════════════════════════════════ */
+  /* ── Agency Section ── */
+  .agency-section { padding: 5rem 2rem; background: #0a0a0a; }
+  .agency-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 768px) { .agency-grid { grid-template-columns: 1fr; gap: 3rem; } }
+  .agency-title { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; color: #fff; line-height: 1.2; margin: 0.75rem 0 1rem; }
+  .agency-lead { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.55); margin-bottom: 2rem; }
+  .agency-stats { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .agency-stat { display: flex; flex-direction: column; }
+  .agency-stat-n { font-size: 1.8rem; font-weight: 800; color: #c9a84c; letter-spacing: -0.03em; }
+  .agency-stat-l { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .agency-stat-sep { width: 1px; height: 2.5rem; background: rgba(201,168,76,0.3); flex-shrink: 0; }
+  .agency-values { display: flex; flex-direction: column; gap: 1.5rem; }
+  .agency-value-card { display: flex; gap: 1.25rem; align-items: flex-start; padding: 1.25rem; border: 1px solid rgba(201,168,76,0.12); border-radius: 14px; background: rgba(201,168,76,0.03); transition: border-color 0.3s, background 0.3s; }
+  .agency-value-card:hover { border-color: rgba(201,168,76,0.3); background: rgba(201,168,76,0.06); }
+  .agency-value-icon { font-size: 1.3rem; color: #c9a84c; flex-shrink: 0; margin-top: 2px; }
+  .agency-value-title { font-size: 0.85rem; font-weight: 700; color: #fff; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .agency-value-desc { font-size: 0.8rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
+
+  /* ── Process Section ── */
+  .process-section { padding: 5rem 2rem; background: #080808; border-top: 1px solid rgba(201,168,76,0.08); }
+  .process-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: #fff; letter-spacing: -0.02em; margin-top: 0.5rem; }
+  .process-steps { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; position: relative; }
+  @media (max-width: 768px) { .process-steps { grid-template-columns: 1fr; gap: 1.5rem; } }
+  .process-step { padding: 2.5rem; border: 1px solid rgba(201,168,76,0.12); position: relative; background: #0a0a0a; transition: border-color 0.3s, background 0.3s; }
+  .process-step:hover { border-color: rgba(201,168,76,0.35); background: rgba(201,168,76,0.03); }
+  .process-step-n { display: block; font-size: 3rem; font-weight: 900; color: rgba(201,168,76,0.15); letter-spacing: -0.05em; line-height: 1; margin-bottom: 1.5rem; }
+  .process-step-line { width: 2rem; height: 2px; background: linear-gradient(90deg, #c9a84c, transparent); margin-bottom: 1rem; }
+  .process-step-title { font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .process-step-desc { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+
   .cta-section {
     padding: 2rem 2rem 6rem;
   }
