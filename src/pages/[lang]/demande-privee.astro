@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { translations, languages } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const langKey = lang && lang in translations ? lang : 'fr';
+const t = (translations as Record<string, Record<string, string>>)[langKey] || {};
+---
+
+<BaseLayout title={`${t.nav_request} — Maison Alba`} description={t.request_lead} lang={langKey}>
+  <Header lang={langKey} variant="solid" />
+
+  <section class="dp-section">
+    <div class="container">
+      <div class="dp-head fade-in">
+        <p class="eyebrow">{t.request_eyebrow}</p>
+        <h1 class="dp-title">{t.request_title}</h1>
+        <div class="rule"></div>
+        <p class="dp-lead">{t.request_lead}</p>
+      </div>
+
+      <div class="dp-grid">
+        <!-- FORM -->
+        <form id="dp-form" class="dp-form fade-in delay-1">
+          <div class="field">
+            <label for="dp-name">{t.request_form_name}</label>
+            <input type="text" id="dp-name" name="name" required autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="dp-email">{t.request_form_email}</label>
+            <input type="email" id="dp-email" name="email" required autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="dp-phone">{t.request_form_phone}</label>
+            <input type="tel" id="dp-phone" name="phone" autocomplete="tel" />
+          </div>
+          <div class="field">
+            <label for="dp-message">{t.request_form_message}</label>
+            <textarea id="dp-message" name="message" rows="5" required></textarea>
+          </div>
+          <div class="dp-submit">
+            <button type="submit" class="cta-outline gold">{t.request_form_submit}</button>
+          </div>
+        </form>
+
+        <!-- COORDONNÉES -->
+        <aside class="dp-coords fade-in delay-2">
+          <div class="coord-block">
+            <p class="coord-label">{t.request_phone_label}</p>
+            <a href={`tel:${t.request_phone.replace(/\s+/g,'')}`} class="coord-value">{t.request_phone}</a>
+          </div>
+
+          <div class="coord-block">
+            <p class="coord-label">{t.request_email_label}</p>
+            <a href={`mailto:${t.request_email}`} class="coord-value">{t.request_email}</a>
+          </div>
+
+          <div class="coord-block">
+            <p class="coord-label">{t.request_office_label}</p>
+            <p class="coord-value">{t.request_office}</p>
+          </div>
+        </aside>
+      </div>
+
+      <div id="dp-thanks" class="dp-thanks hidden fade-in">
+        <h2 class="dp-thanks-title">{t.offmarket_thanks_title}</h2>
+        <div class="rule rule-center"></div>
+        <p class="dp-thanks-lead">{t.offmarket_thanks_lead}</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang={langKey} />
+</BaseLayout>
+
+<style>
+  .dp-section { padding: clamp(8rem, 14vw, 12rem) 0 clamp(6rem, 10vw, 10rem); }
+
+  .dp-head { max-width: 760px; margin-bottom: clamp(4rem, 8vw, 6rem); }
+  .dp-title { font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.05; margin-top: 1rem; }
+  .dp-lead {
+    font-family: var(--serif-text);
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--text-soft);
+    margin-top: 1.5rem;
+  }
+
+  .dp-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .dp-grid { grid-template-columns: 1fr; }
+  }
+
+  .dp-submit { margin-top: 2rem; }
+  .dp-form.hidden { display: none; }
+
+  .dp-coords {
+    border-left: 1px solid var(--line);
+    padding-left: clamp(2rem, 4vw, 4rem);
+  }
+
+  @media (max-width: 900px) {
+    .dp-coords {
+      border-left: none;
+      border-top: 1px solid var(--line);
+      padding-left: 0;
+      padding-top: 2.5rem;
+      margin-top: 2rem;
+    }
+  }
+
+  .coord-block { margin-bottom: 2.5rem; }
+  .coord-label {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+  }
+  .coord-value {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--text);
+    transition: color 0.3s;
+  }
+  a.coord-value:hover { color: var(--accent); }
+
+  .dp-thanks { text-align: center; padding: 6rem 0 0; }
+  .dp-thanks.hidden { display: none; }
+  .dp-thanks-title {
+    font-style: italic;
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1rem;
+  }
+  .dp-thanks-lead {
+    font-family: var(--serif-text);
+    font-size: 1.1rem;
+    color: var(--text-soft);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    var form = document.getElementById('dp-form');
+    var thanks = document.getElementById('dp-thanks');
+    if (!form || !thanks) return;
+
+    // Pre-fill if ?demeure=slug
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var demeure = params.get('demeure');
+      var msg = document.getElementById('dp-message');
+      if (demeure && msg && !msg.value) {
+        msg.value = 'Demande relative à la demeure : ' + demeure.replace(/-/g, ' ');
+      }
+    } catch(e) {}
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var data = {
+        metier: 'immobilier-luxe',
+        step_reached: 4,
+        completed: true,
+        contact_nom: form.name.value || '',
+        contact_email: form.email.value || '',
+        contact_tel: form.phone.value || '',
+        contact_message: form.message.value || '',
+        utm_source: 'demande-privee',
+        lang: document.documentElement.lang || 'fr',
+      };
+      try {
+        fetch('/api/devis/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }).catch(function(){});
+      } catch (e) {}
+      form.classList.add('hidden');
+      thanks.classList.remove('hidden');
+      setTimeout(function(){ thanks.classList.add('visible'); }, 50);
+    });
+  })();
+</script>

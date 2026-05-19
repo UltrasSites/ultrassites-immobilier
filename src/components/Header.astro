@@ -3,9 +3,10 @@ import { translations, languages } from '../i18n/translations';
 
 interface Props {
   lang: string;
+  variant?: 'overlay' | 'solid';
 }
 
-const { lang } = Astro.props;
+const { lang, variant = 'overlay' } = Astro.props;
 const langKey = lang && lang in translations ? lang : 'fr';
 const t = (translations as Record<string, Record<string, string>>)[langKey] || {};
 
@@ -13,996 +14,421 @@ const pathSegments = Astro.url.pathname.split('/').filter(Boolean);
 const pathWithoutLang = pathSegments.slice(1).join('/') || '';
 ---
 
-<!-- ═══════════ DESKTOP HEADER ═══════════ -->
-<header id="main-header" class="liquid-glass">
-  <a id="header-logo-link" href={`/${langKey}/`} class="logo-link">
-    <span class="logo-text">ESTATO</span>
-    <span class="logo-dot">◆</span>
-  </a>
+<header class={`alba-header ${variant === 'overlay' ? 'overlay' : 'solid'}`} id="alba-header">
+  <div class="alba-header-inner">
+    <!-- Logo top-left -->
+    <a href={`/${langKey}/`} class="alba-brand" aria-label="MAISON ALBA">
+      <span class="brand-mark">M·A</span>
+      <span class="brand-name">Maison Alba</span>
+    </a>
 
-  <nav class="desktop-nav">
-    <a href={`/${langKey}/#properties`}>{t.nav_properties}</a>
-    <a href={`/${langKey}/#properties`}>{t.nav_buy}</a>
-    <a href={`/${langKey}/#properties`}>{t.nav_rent}</a>
-    <a href={`mailto:contact@estato.com`}>{t.nav_contact}</a>
-  </nav>
+    <!-- Navigation top-right -->
+    <nav class="alba-nav" aria-label="Navigation principale">
+      <a href={`/${langKey}/#selection`} class="alba-nav-link">{t.nav_selection}</a>
+      <a href={`/${langKey}/notre-maison`} class="alba-nav-link">{t.nav_house}</a>
+      <a href={`/${langKey}/off-market`} class="alba-nav-link">{t.nav_offmarket}</a>
+      <a href={`/${langKey}/estimation-discrete`} class="alba-nav-link">{t.nav_estimation}</a>
+      <a href={`/${langKey}/demande-privee`} class="alba-nav-link alba-nav-cta">{t.nav_request}</a>
+    </nav>
 
-  <div class="header-right">
-    <!-- Language Switcher Desktop -->
-    <div class="lang-wrap" id="lang-wrap-desktop">
-      <button
-        type="button"
-        id="lang-btn-desktop"
-        class="lang-btn"
-        aria-label={t.lang_btn_aria}
-        aria-expanded="false"
-        aria-haspopup="true"
-      >
-        <span class="lang-code">{langKey.toUpperCase()}</span>
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
+    <!-- Language top-right (très discret) -->
+    <div class="alba-lang" id="alba-lang">
+      <button type="button" class="alba-lang-btn" id="alba-lang-btn" aria-haspopup="true" aria-expanded="false">
+        {langKey.toUpperCase()}
       </button>
-      <div
-        id="lang-dropdown-desktop"
-        class="lang-dropdown hidden"
-        role="menu"
-      >
-        {Object.entries(languages).map(([key, label]) => (
+      <div class="alba-lang-menu hidden" id="alba-lang-menu" role="menu">
+        {Object.keys(languages).map((key) => (
           <a
             href={pathWithoutLang ? `/${key}/${pathWithoutLang}` : `/${key}/`}
-            class={`lang-option ${key === langKey ? 'active' : ''}`}
+            class={`alba-lang-opt ${key === langKey ? 'active' : ''}`}
             role="menuitem"
           >
-            {label}
+            {key.toUpperCase()}
           </a>
         ))}
       </div>
     </div>
 
-    <!-- Desktop Theme Switcher -->
-    <div class="desktop-theme-wrap" id="desktop-theme-wrap">
-      <button type="button" class="desktop-theme-btn" id="desktop-theme-btn" aria-label="Changer de thème">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M12 2a10 10 0 0 1 0 20V2z" fill="currentColor" stroke="none" opacity="0.3"/>
-          <circle cx="12" cy="12" r="3" fill="currentColor"/>
-        </svg>
-      </button>
-      <div id="desktop-theme-picker" class="desktop-theme-picker hidden" role="menu">
-        <button class="dt-swatch" data-dt-theme="dark" aria-label="Navy Dark" title="Navy Dark">
-          <span class="dt-dot" style="background:linear-gradient(135deg,#05111f,#c9a84c)"></span>
-        </button>
-        <button class="dt-swatch" data-dt-theme="emerald" aria-label="Emerald" title="Emerald">
-          <span class="dt-dot" style="background:linear-gradient(135deg,#071a10,#e8b84b)"></span>
-        </button>
-        <button class="dt-swatch" data-dt-theme="bordeaux" aria-label="Bordeaux" title="Bordeaux">
-          <span class="dt-dot" style="background:linear-gradient(135deg,#1a0810,#d4a853)"></span>
-        </button>
-        <button class="dt-swatch" data-dt-theme="slate" aria-label="Slate" title="Slate">
-          <span class="dt-dot" style="background:linear-gradient(135deg,#0e1218,#b8c8d8)"></span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Contact CTA -->
-    <a href={`mailto:contact@estato.com`} class="header-cta">
-      {t.nav_contact}
-    </a>
+    <!-- Mobile burger -->
+    <button type="button" class="alba-burger" id="alba-burger" aria-label="Menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+    </button>
   </div>
 </header>
 
-<!-- ═══════════ MOBILE DOCK ═══════════ -->
-<div class="lg-dock liquid-glass" id="mobile-dock">
-  <!-- Call icon -->
-  <a href="tel:+33600000000" class="dock-btn d-call" aria-label="Appeler">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
-    </svg>
-  </a>
-
-  <div class="lg-sep"></div>
-
-  <!-- Contact icon -->
-  <a href={`mailto:contact@estato.com`} class="dock-btn d-contact" aria-label={t.nav_contact}>
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
-    </svg>
-  </a>
-
-  <div class="lg-sep"></div>
-
-  <!-- Burger Menu -->
-  <button type="button" class="dock-btn d-menu" id="dock-menu-btn" aria-label="Menu">
-    <svg id="dock-burger" style="width:22px;height:22px;transition:opacity 0.3s" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
-    </svg>
-    <svg id="dock-close" style="width:22px;height:22px;position:absolute;inset:0;margin:auto;opacity:0;pointer-events:none;transform:rotate(90deg);transition:opacity 0.3s,transform 0.3s" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+<!-- Mobile menu fullscreen -->
+<div class="alba-mobile" id="alba-mobile" aria-hidden="true">
+  <button type="button" class="alba-mobile-close" id="alba-mobile-close" aria-label="Fermer">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+      <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>
     </svg>
   </button>
-
-  <div class="lg-sep"></div>
-
-  <!-- Language Switcher Mobile -->
-  <div class="dock-lang-wrap" id="dock-lang-wrap">
-    <button
-      type="button"
-      id="lang-btn-mobile"
-      class="dock-btn d-lang"
-      aria-label={t.lang_btn_aria}
-      aria-expanded="false"
-    >
-      <span style="font-size:0.65rem;font-weight:700;letter-spacing:0.05em">{langKey.toUpperCase()}</span>
-    </button>
-    <div id="lang-dropdown-mobile" class="lang-dropdown-mobile hidden" role="menu">
-      {Object.entries(languages).map(([key, label]) => (
-        <a
-          href={pathWithoutLang ? `/${key}/${pathWithoutLang}` : `/${key}/`}
-          class={`lang-option-mobile ${key === langKey ? 'active' : ''}`}
-          role="menuitem"
-        >
-          {label}
-        </a>
-      ))}
-    </div>
-  </div>
-
-  <div class="lg-sep"></div>
-
-  <!-- Theme Picker -->
-  <div class="dock-theme-wrap" id="dock-theme-wrap">
-    <button type="button" class="dock-btn d-theme" id="theme-dock-btn" aria-label="Changer de thème">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20V2z" fill="currentColor" stroke="none" opacity="0.3"/><circle cx="12" cy="12" r="3" fill="currentColor"/>
-      </svg>
-    </button>
-    <div id="theme-picker" class="theme-picker hidden" role="menu">
-      <button class="theme-swatch" data-theme-name="dark" aria-label="Navy Dark" title="Navy Dark">
-        <span class="swatch-dot" style="background:linear-gradient(135deg,#05111f,#c9a84c)"></span>
-        <span class="swatch-label">NAVY</span>
-      </button>
-      <button class="theme-swatch" data-theme-name="emerald" aria-label="Emerald" title="Emerald">
-        <span class="swatch-dot" style="background:linear-gradient(135deg,#071a10,#e8b84b)"></span>
-        <span class="swatch-label">ÉMERAUDE</span>
-      </button>
-      <button class="theme-swatch" data-theme-name="bordeaux" aria-label="Bordeaux" title="Bordeaux">
-        <span class="swatch-dot" style="background:linear-gradient(135deg,#1a0810,#d4a853)"></span>
-        <span class="swatch-label">BORDEAUX</span>
-      </button>
-      <button class="theme-swatch" data-theme-name="slate" aria-label="Slate" title="Slate">
-        <span class="swatch-dot" style="background:linear-gradient(135deg,#0e1218,#b8c8d8)"></span>
-        <span class="swatch-label">SLATE</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════ MOBILE MENU PANEL ═══════════ -->
-<div class="menu-overlay" id="menu-overlay"></div>
-<div class="menu-panel liquid-glass" id="menu-panel">
-  <div class="mp-header">
-    <span class="mp-logo">ESTATO</span>
-    <button type="button" class="mp-close" id="menu-close-btn" aria-label={t.menu_close}>
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
-  </div>
-  <nav class="mp-nav">
-    <a href={`/${langKey}/#properties`} class="mp-link menu-link">{t.nav_properties}</a>
-    <a href={`/${langKey}/#properties`} class="mp-link menu-link">{t.nav_buy}</a>
-    <a href={`/${langKey}/#properties`} class="mp-link menu-link">{t.nav_rent}</a>
-    <a href={`mailto:contact@estato.com`} class="mp-link menu-link">{t.nav_contact}</a>
+  <nav class="alba-mobile-nav">
+    <a href={`/${langKey}/#selection`} class="alba-mobile-link" data-close>{t.nav_selection}</a>
+    <a href={`/${langKey}/notre-maison`} class="alba-mobile-link" data-close>{t.nav_house}</a>
+    <a href={`/${langKey}/off-market`} class="alba-mobile-link" data-close>{t.nav_offmarket}</a>
+    <a href={`/${langKey}/estimation-discrete`} class="alba-mobile-link" data-close>{t.nav_estimation}</a>
+    <a href={`/${langKey}/demande-privee`} class="alba-mobile-link" data-close>{t.nav_request}</a>
   </nav>
-
-  <!-- Language switcher inside menu -->
-  <div class="mp-lang-grid">
-    {Object.entries(languages).map(([key, label]) => (
+  <div class="alba-mobile-lang">
+    {Object.keys(languages).map((key) => (
       <a
         href={pathWithoutLang ? `/${key}/${pathWithoutLang}` : `/${key}/`}
-        class={`mp-lang-item ${key === langKey ? 'active' : ''}`}
+        class={`alba-mobile-lang-opt ${key === langKey ? 'active' : ''}`}
       >
-        {label}
+        {key.toUpperCase()}
       </a>
     ))}
-  </div>
-
-  <!-- Theme switcher inside menu -->
-  <div class="mp-theme-row">
-    <button class="mp-theme-swatch" data-theme-name="dark" aria-label="Navy Dark" title="Navy Dark">
-      <span class="swatch-dot" style="background:linear-gradient(135deg,#05111f,#c9a84c)"></span>
-    </button>
-    <button class="mp-theme-swatch" data-theme-name="emerald" aria-label="Emerald" title="Emerald">
-      <span class="swatch-dot" style="background:linear-gradient(135deg,#071a10,#e8b84b)"></span>
-    </button>
-    <button class="mp-theme-swatch" data-theme-name="bordeaux" aria-label="Bordeaux" title="Bordeaux">
-      <span class="swatch-dot" style="background:linear-gradient(135deg,#1a0810,#d4a853)"></span>
-    </button>
-    <button class="mp-theme-swatch" data-theme-name="slate" aria-label="Slate" title="Slate">
-      <span class="swatch-dot" style="background:linear-gradient(135deg,#0e1218,#b8c8d8)"></span>
-    </button>
-  </div>
-
-  <div class="mp-footer">
-    <a href={`mailto:contact@estato.com`} class="liquid-btn primary" style="width:100%;justify-content:center">
-      {t.hero_cta2}
-    </a>
   </div>
 </div>
 
 <style>
-  /* ══════════ DESKTOP HEADER ══════════ */
-  header {
+  .alba-header {
     position: fixed;
-    top: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 400;
-    width: 90%;
-    max-width: 1200px;
-    height: 60px;
-    border-radius: 99px;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 80;
+    transition: background 0.6s var(--transition-slow), border-color 0.6s, padding 0.4s;
+    border-bottom: 1px solid transparent;
+  }
+
+  .alba-header.overlay {
+    background: transparent;
+  }
+
+  .alba-header.solid {
+    background: var(--bg);
+    border-bottom-color: var(--line);
+  }
+
+  .alba-header.scrolled {
+    background: rgba(245, 241, 234, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom-color: var(--line);
+  }
+
+  [data-theme="noir"] .alba-header.scrolled {
+    background: rgba(13, 13, 13, 0.92);
+  }
+
+  .alba-header-inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 1.4rem clamp(1.5rem, 4vw, 3rem);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 2rem;
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 2rem;
   }
 
-  @media (max-width: 1023px) {
-    header {
-      display: none;
-    }
-  }
-
-  /* Logo — hidden until hero brand exits viewport */
-  .logo-link {
+  /* Brand */
+  .alba-brand {
     display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    color: var(--text);
+  }
+
+  .alba-header.overlay:not(.scrolled) .alba-brand {
+    color: #FBF8F2;
+  }
+
+  .brand-mark {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 1.3rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+  }
+
+  .brand-name {
+    font-family: var(--serif-display);
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+
+  /* Navigation */
+  .alba-nav {
+    display: none;
     align-items: center;
-    gap: 0.4rem;
-    text-decoration: none;
+    gap: 2.2rem;
+    margin-left: auto;
+  }
+
+  @media (min-width: 1024px) {
+    .alba-nav { display: flex; }
+  }
+
+  .alba-nav-link {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    position: relative;
+    padding: 0.4rem 0;
+    transition: color 0.4s var(--transition-slow);
+  }
+
+  .alba-header.overlay:not(.scrolled) .alba-nav-link {
+    color: rgba(251, 248, 242, 0.85);
+  }
+
+  .alba-nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--transition-slow);
+  }
+
+  .alba-nav-link:hover {
+    color: var(--accent);
+  }
+
+  .alba-nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .alba-nav-cta {
+    color: var(--accent) !important;
+  }
+
+  /* Lang */
+  .alba-lang {
+    display: none;
+    position: relative;
+    margin-left: 1rem;
+  }
+
+  @media (min-width: 1024px) {
+    .alba-lang { display: block; }
+  }
+
+  .alba-lang-btn {
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    padding: 0.55rem 0.85rem;
+    cursor: pointer;
+    transition: all 0.4s;
+  }
+
+  .alba-header.overlay:not(.scrolled) .alba-lang-btn {
+    color: #FBF8F2;
+    border-color: rgba(251, 248, 242, 0.4);
+  }
+
+  .alba-lang-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .alba-lang-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    min-width: 80px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  }
+
+  .alba-lang-menu.hidden { display: none; }
+
+  .alba-lang-opt {
+    padding: 0.7rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--text-soft);
+    transition: all 0.3s;
+  }
+
+  .alba-lang-opt:hover,
+  .alba-lang-opt.active {
+    background: var(--bg-soft);
+    color: var(--accent);
+  }
+
+  /* Burger mobile */
+  .alba-burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-left: auto;
+    cursor: pointer;
+  }
+
+  @media (min-width: 1024px) {
+    .alba-burger { display: none; }
+  }
+
+  .alba-burger span {
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--text);
+    transition: all 0.4s var(--transition-slow);
+  }
+
+  .alba-header.overlay:not(.scrolled) .alba-burger span {
+    background: #FBF8F2;
+  }
+
+  /* Mobile menu */
+  .alba-mobile {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background: var(--bg);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 0.5s var(--transition-slow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
   }
 
-  .logo-link.logo-visible {
+  .alba-mobile.open {
     opacity: 1;
     pointer-events: auto;
   }
 
-  .logo-text {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.2rem;
-    letter-spacing: 0.2em;
+  .alba-mobile-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: 1px solid var(--line-strong);
     color: var(--text);
-    line-height: 1;
-  }
-
-  .logo-dot {
-    color: var(--accent);
-    font-size: 0.45rem;
-    margin-bottom: 2px;
-  }
-
-  /* Desktop nav */
-  .desktop-nav {
     display: flex;
-    gap: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   }
 
-  .desktop-nav a {
-    font-size: 0.6rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    color: var(--text2);
+  .alba-mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .alba-mobile-link {
+    font-family: var(--serif-display);
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 0.02em;
     transition: color 0.3s;
   }
 
-  .desktop-nav a:hover {
+  .alba-mobile-link:hover {
     color: var(--accent);
   }
 
-  /* Header right */
-  .header-right {
+  .alba-mobile-lang {
+    margin-top: 3rem;
     display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  /* Language btn desktop */
-  .lang-wrap {
-    position: relative;
-  }
-
-  .lang-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 99px;
-    color: var(--text2);
-    padding: 0.5rem 1rem;
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    font-family: 'Outfit', sans-serif;
-    transition: all 0.3s;
-  }
-
-  .lang-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  /* Dock theme picker */
-  .dock-theme-wrap { position: relative; }
-
-  .d-theme {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border) !important;
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    color: var(--accent);
-  }
-
-  .theme-picker {
-    position: absolute;
-    bottom: calc(100% + 12px);
-    right: -20px;
-    background: var(--bg2);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    box-shadow: 0 -16px 40px rgba(0,0,0,0.6);
-    z-index: 700;
-    min-width: 140px;
-  }
-
-  .theme-picker.hidden { display: none; }
-
-  .theme-swatch {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.5rem 0.7rem;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.25s;
-    width: 100%;
-    text-align: left;
-  }
-
-  .theme-swatch:hover, .theme-swatch.active {
-    background: rgba(255,255,255,0.06);
-    border-color: var(--accent);
-  }
-
-  .swatch-dot {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    border: 1px solid rgba(255,255,255,0.15);
-  }
-
-  .swatch-label {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: var(--text2);
-  }
-
-  .lang-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    min-width: 140px;
-    background: var(--bg2);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
-    z-index: 500;
-  }
-
-  .lang-dropdown.hidden { display: none; }
-
-  .lang-option {
-    display: block;
-    padding: 0.7rem 1.2rem;
-    font-size: 0.75rem;
-    color: var(--text2);
-    font-family: 'Outfit', sans-serif;
-    transition: all 0.2s;
-  }
-
-  .lang-option:hover,
-  .lang-option.active {
-    background: rgba(var(--accent-rgb), 0.1);
-    color: var(--accent);
-  }
-
-  /* Header CTA */
-  .header-cta {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.55rem 1.4rem;
-    border-radius: 99px;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-    color: #000;
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    font-family: 'Outfit', sans-serif;
-    transition: all 0.3s;
-    box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.35);
-  }
-
-  .header-cta:hover {
-    box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.5);
-    transform: translateY(-1px);
-  }
-
-  /* ══════════ MOBILE DOCK ══════════ */
-  .lg-dock {
-    display: none;
-    position: fixed;
-    bottom: calc(1.6rem + env(safe-area-inset-bottom));
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 600;
-    padding: 12px 16px;
-    border-radius: 99px;
-    gap: 10px;
-    align-items: center;
-  }
-
-  @media (max-width: 1023px) {
-    .lg-dock { display: flex; }
-  }
-
-  .dock-btn {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    cursor: pointer;
-    border: none;
-    overflow: hidden;
-    transition: transform 0.3s;
-    text-decoration: none;
-  }
-
-  .dock-btn:active { transform: scale(0.85); }
-
-  .dock-btn svg {
-    width: 22px;
-    height: 22px;
-    position: relative;
-    z-index: 2;
-  }
-
-  .d-call {
-    background: linear-gradient(135deg, #1a6b3c 0%, #0f4526 100%);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(26, 107, 60, 0.4);
-  }
-
-  .d-contact {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-    color: #000;
-    box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.4);
-  }
-
-  .d-menu {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border) !important;
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    color: var(--text);
-  }
-
-  .d-lang {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border) !important;
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    color: var(--text2);
-    font-family: 'Outfit', sans-serif;
-  }
-
-  .lg-sep {
-    width: 1px;
-    height: 28px;
-    background: var(--glass-border);
-  }
-
-  /* Mobile lang dropdown */
-  .dock-lang-wrap { position: relative; }
-
-  .lang-dropdown-mobile {
-    position: absolute;
-    bottom: calc(100% + 12px);
-    right: 0;
-    min-width: 140px;
-    background: var(--bg2);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 -16px 40px rgba(0,0,0,0.5);
-    z-index: 700;
-  }
-
-  .lang-dropdown-mobile.hidden { display: none; }
-
-  .lang-option-mobile {
-    display: block;
-    padding: 0.8rem 1.2rem;
-    font-size: 0.8rem;
-    color: var(--text2);
-    font-family: 'Outfit', sans-serif;
-    transition: all 0.2s;
-  }
-
-  .lang-option-mobile:hover,
-  .lang-option-mobile.active {
-    background: rgba(var(--accent-rgb), 0.1);
-    color: var(--accent);
-  }
-
-  /* ══════════ DESKTOP THEME SWITCHER ══════════ */
-  .desktop-theme-wrap {
-    position: relative;
-  }
-
-  .desktop-theme-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: var(--accent);
-    cursor: pointer;
-    transition: all 0.3s;
-    font-family: 'Outfit', sans-serif;
-  }
-
-  .desktop-theme-btn:hover {
-    border-color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.1);
-  }
-
-  .desktop-theme-picker {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    background: var(--bg2);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 0.6rem;
-    display: flex;
-    gap: 0.5rem;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
-    z-index: 600;
-  }
-
-  .desktop-theme-picker.hidden { display: none; }
-
-  .dt-swatch {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    padding: 0;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.25s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .dt-swatch:hover {
-    transform: scale(1.15);
-  }
-
-  .dt-swatch.active {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.4);
-  }
-
-  .dt-dot {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: block;
-    border: 1px solid rgba(255,255,255,0.15);
-  }
-
-  /* ══════════ MENU OVERLAY & PANEL ══════════ */
-  .menu-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 700;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
-  .menu-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .menu-panel {
-    position: fixed;
-    bottom: calc(110px + env(safe-area-inset-bottom));
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    z-index: 800;
-    width: min(92vw, 400px);
-    border-radius: 28px;
-    padding: 2rem;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .menu-panel.open {
-    opacity: 1;
-    pointer-events: all;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  .mp-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--glass-border);
-  }
-
-  .mp-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 0.2em;
-    color: var(--accent);
-  }
-
-  .mp-close {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: var(--text2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-  .mp-close:hover { border-color: var(--accent); color: var(--accent); }
-
-  .mp-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    margin-bottom: 2rem;
-  }
-
-  .mp-link {
-    display: block;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--text);
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--glass-border);
-    transition: color 0.3s, padding-left 0.3s;
-  }
-
-  .mp-link:hover {
-    color: var(--accent);
-    padding-left: 0.5rem;
-  }
-
-  .mp-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  /* Language grid inside menu panel */
-  .mp-lang-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.4rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .mp-lang-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.55rem 0.75rem;
-    border-radius: 10px;
-    border: 1px solid var(--glass-border);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    color: var(--text2);
-    background: var(--glass-bg);
-    transition: all 0.25s;
-  }
-
-  .mp-lang-item:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .mp-lang-item.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.08);
-  }
-
-  /* Theme dots row inside menu panel */
-  .mp-theme-row {
-    display: flex;
-    justify-content: center;
     gap: 0.75rem;
-    margin-bottom: 1.25rem;
-    padding: 0.75rem;
-    border-radius: 14px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
   }
 
-  .mp-theme-swatch {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    padding: 0;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.25s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .alba-mobile-lang-opt {
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--line-strong);
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--text-soft);
   }
 
-  .mp-theme-swatch:hover {
-    transform: scale(1.15);
-  }
-
-  .mp-theme-swatch.active {
+  .alba-mobile-lang-opt.active {
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.4);
+    color: var(--accent);
   }
 </style>
 
 <script is:inline>
   (function() {
-    // Desktop lang dropdown
-    var langBtnD = document.getElementById('lang-btn-desktop');
-    var langDropD = document.getElementById('lang-dropdown-desktop');
+    var header = document.getElementById('alba-header');
+    var burger = document.getElementById('alba-burger');
+    var mobile = document.getElementById('alba-mobile');
+    var mobileClose = document.getElementById('alba-mobile-close');
+    var langBtn = document.getElementById('alba-lang-btn');
+    var langMenu = document.getElementById('alba-lang-menu');
 
-    if (langBtnD && langDropD) {
-      langBtnD.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var hidden = langDropD.classList.contains('hidden');
-        langDropD.classList.toggle('hidden', !hidden);
-        langBtnD.setAttribute('aria-expanded', String(hidden));
-      });
-      document.addEventListener('click', function() {
-        langDropD.classList.add('hidden');
-        langBtnD.setAttribute('aria-expanded', 'false');
-      });
+    // Scroll state on header
+    function onScroll() {
+      if (window.scrollY > 60) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
     }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 
-    // Mobile lang dropdown
-    var langBtnM = document.getElementById('lang-btn-mobile');
-    var langDropM = document.getElementById('lang-dropdown-mobile');
-
-    if (langBtnM && langDropM) {
-      langBtnM.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var hidden = langDropM.classList.contains('hidden');
-        langDropM.classList.toggle('hidden', !hidden);
-        langBtnM.setAttribute('aria-expanded', String(hidden));
-      });
-      document.addEventListener('click', function() {
-        langDropM.classList.add('hidden');
-      });
-    }
-
-    // Mobile menu
-    var overlay = document.getElementById('menu-overlay');
-    var panel = document.getElementById('menu-panel');
-    var dockMenuBtn = document.getElementById('dock-menu-btn');
-    var menuCloseBtn = document.getElementById('menu-close-btn');
-    var burger = document.getElementById('dock-burger');
-    var closeIcon = document.getElementById('dock-close');
-    var menuOpen = false;
-
-    function openMenu() {
-      if (overlay) overlay.classList.add('open');
-      if (panel) panel.classList.add('open');
+    // Burger
+    function openMobile() {
+      mobile.classList.add('open');
+      mobile.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
-      menuOpen = true;
-      if (burger) burger.style.opacity = '0';
-      if (closeIcon) { closeIcon.style.opacity = '1'; closeIcon.style.pointerEvents = 'auto'; closeIcon.style.transform = 'rotate(0deg)'; }
     }
-
-    function closeMenu() {
-      // Restore panel transition and transform before closing
-      if (panel) {
-        panel.style.transition = '';
-        panel.style.transform = '';
-      }
-      if (overlay) {
-        overlay.style.opacity = '';
-        overlay.classList.remove('open');
-      }
-      if (panel) panel.classList.remove('open');
+    function closeMobile() {
+      mobile.classList.remove('open');
+      mobile.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
-      menuOpen = false;
-      if (burger) burger.style.opacity = '1';
-      if (closeIcon) { closeIcon.style.opacity = '0'; closeIcon.style.pointerEvents = 'none'; closeIcon.style.transform = 'rotate(90deg)'; }
     }
-
-    if (dockMenuBtn) dockMenuBtn.addEventListener('click', function() { menuOpen ? closeMenu() : openMenu(); });
-    if (menuCloseBtn) menuCloseBtn.addEventListener('click', closeMenu);
-    if (overlay) overlay.addEventListener('click', closeMenu);
-
-    document.querySelectorAll('.menu-link').forEach(function(el) {
-      el.addEventListener('click', closeMenu);
+    if (burger) burger.addEventListener('click', openMobile);
+    if (mobileClose) mobileClose.addEventListener('click', closeMobile);
+    document.querySelectorAll('[data-close]').forEach(function(el){
+      el.addEventListener('click', closeMobile);
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && mobile.classList.contains('open')) closeMobile();
     });
 
-    // ── REAL-TIME SWIPE-DOWN GESTURE with visual feedback ──
-    var swipeStartY = 0;
-    var swipeStartX = 0;
-    var swipeT0 = 0;
-
-    if (panel) {
-      panel.addEventListener('touchstart', function(e) {
-        swipeStartY = e.touches[0].clientY;
-        swipeStartX = e.touches[0].clientX;
-        swipeT0 = Date.now();
-        panel.style.transition = 'none';
-      }, { passive: true });
-
-      panel.addEventListener('touchmove', function(e) {
-        var dy = e.touches[0].clientY - swipeStartY;
-        var dx = Math.abs(e.touches[0].clientX - swipeStartX);
-        // Swipe naturel : bas
-        if (dy > 0 && dx < 60) {
-          panel.style.transform = 'translateX(-50%) translateY(' + dy + 'px)';
-          if (overlay) {
-            var alpha = Math.max(0, 1 - dy / 300);
-            overlay.style.opacity = String(alpha);
-          }
-        }
-      }, { passive: true });
-
-      panel.addEventListener('touchend', function(e) {
-        var dy = e.changedTouches[0].clientY - swipeStartY;
-        var dx = Math.abs(e.changedTouches[0].clientX - swipeStartX);
-        var elapsed = Date.now() - swipeT0;
-        var velocity = elapsed > 0 ? dy / elapsed : 0;
-
-        if (dy > 0 && dx < 60 && (velocity > 0.45 || dy > 80)) {
-          closeMenu();
-        } else {
-          panel.style.transition = '';
-          panel.style.transform = '';
-          if (overlay) overlay.style.opacity = '';
-        }
-      }, { passive: true });
-    }
-
-    // ── THEME PICKER LOGIC ──
-    var themeDockBtn = document.getElementById('theme-dock-btn');
-    var themePicker = document.getElementById('theme-picker');
-    var themeSwatches = document.querySelectorAll('.theme-swatch');
-    var mpThemeSwatches = document.querySelectorAll('.mp-theme-swatch');
-
-    // Desktop theme picker
-    var desktopThemeBtn = document.getElementById('desktop-theme-btn');
-    var desktopThemePicker = document.getElementById('desktop-theme-picker');
-    var dtSwatches = document.querySelectorAll('.dt-swatch');
-
-    function applyTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('immo-theme', theme);
-      // Sync all swatch sets
-      themeSwatches.forEach(function(s) {
-        s.classList.toggle('active', s.getAttribute('data-theme-name') === theme);
-      });
-      mpThemeSwatches.forEach(function(s) {
-        s.classList.toggle('active', s.getAttribute('data-theme-name') === theme);
-      });
-      dtSwatches.forEach(function(s) {
-        s.classList.toggle('active', s.getAttribute('data-dt-theme') === theme);
-      });
-    }
-
-    // Mobile dock theme picker
-    if (themeDockBtn && themePicker) {
-      themeDockBtn.addEventListener('click', function(e) {
+    // Lang dropdown
+    if (langBtn && langMenu) {
+      langBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        themePicker.classList.toggle('hidden');
-        if (desktopThemePicker) desktopThemePicker.classList.add('hidden');
+        var hidden = langMenu.classList.contains('hidden');
+        langMenu.classList.toggle('hidden', !hidden);
+        langBtn.setAttribute('aria-expanded', String(hidden));
       });
-      themePicker.addEventListener('click', function(e) { e.stopPropagation(); });
+      document.addEventListener('click', function() {
+        langMenu.classList.add('hidden');
+        langBtn.setAttribute('aria-expanded', 'false');
+      });
     }
-
-    themeSwatches.forEach(function(swatch) {
-      swatch.addEventListener('click', function() {
-        applyTheme(swatch.getAttribute('data-theme-name'));
-        if (themePicker) themePicker.classList.add('hidden');
-      });
-    });
-
-    // In-menu panel theme swatches
-    mpThemeSwatches.forEach(function(swatch) {
-      swatch.addEventListener('click', function(e) {
-        e.stopPropagation();
-        applyTheme(swatch.getAttribute('data-theme-name'));
-      });
-    });
-
-    // Desktop theme picker
-    if (desktopThemeBtn && desktopThemePicker) {
-      desktopThemeBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        desktopThemePicker.classList.toggle('hidden');
-        if (themePicker) themePicker.classList.add('hidden');
-      });
-      desktopThemePicker.addEventListener('click', function(e) { e.stopPropagation(); });
-    }
-
-    dtSwatches.forEach(function(swatch) {
-      swatch.addEventListener('click', function() {
-        applyTheme(swatch.getAttribute('data-dt-theme'));
-        if (desktopThemePicker) desktopThemePicker.classList.add('hidden');
-      });
-    });
-
-    // Close all pickers on outside click
-    document.addEventListener('click', function() {
-      if (themePicker) themePicker.classList.add('hidden');
-      if (desktopThemePicker) desktopThemePicker.classList.add('hidden');
-    });
-
-    // Initial load — restore theme from localStorage
-    var savedTheme = localStorage.getItem('immo-theme') || localStorage.getItem('theme-estato') || 'dark';
-    applyTheme(savedTheme);
   })();
 </script>

@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
 import PropertyCard from '../../components/PropertyCard.astro';
-import { translations, languages } from '../../i18n/translations';
+import { translations, languages, getEstates } from '../../i18n/translations';
 
 export function getStaticPaths() {
   return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -12,1198 +13,284 @@ const { lang } = Astro.params;
 const langKey = lang && lang in translations ? lang : 'fr';
 const t = (translations as Record<string, Record<string, string>>)[langKey] || {};
 
-const heroLines = t.hero_title ? t.hero_title.split('\n') : ['ESTATO'];
+const estates = getEstates(t);
 
-// Format number per locale (1 250 000 / 1,250,000 / etc.)
-const localeMap: Record<string, string> = { fr: 'fr-FR', en: 'en-US', es: 'es-ES', pt: 'pt-PT' };
-const numLocale = localeMap[langKey] || 'fr-FR';
-const fmt = (n: number) => new Intl.NumberFormat(numLocale).format(n);
-
-const properties = [
-  {
-    slug: 'villa-moderne-cote-azur',
-    title: t.prop1_title,
-    location: t.prop1_loc,
-    price: `${fmt(1250000)} €`,
-    beds: 5,
-    baths: 3,
-    sqm: 320,
-    badge: 'exclusive',
-    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop&q=80',
-  },
-  {
-    slug: 'appartement-haussmannien-paris',
-    title: t.prop2_title,
-    location: t.prop2_loc,
-    price: `${fmt(890000)} €`,
-    beds: 3,
-    baths: 2,
-    sqm: 145,
-    badge: 'sale',
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop&q=80',
-  },
-  {
-    slug: 'penthouse-vue-mer-barcelone',
-    title: t.prop3_title,
-    location: t.prop3_loc,
-    price: `${fmt(2100)} €${t.prop_per_month}`,
-    beds: 2,
-    baths: 2,
-    sqm: 110,
-    badge: 'rent',
-    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop&q=80',
-  },
-  {
-    slug: 'villa-contemporaine-geneve',
-    title: t.prop4_title,
-    location: t.prop4_loc,
-    price: `${fmt(3400000)} CHF`,
-    beds: 6,
-    baths: 4,
-    sqm: 480,
-    badge: 'new',
-    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop&q=80',
-  },
-  {
-    slug: 'appartement-vue-tage-lisbonne',
-    title: t.prop5_title,
-    location: t.prop5_loc,
-    price: `${fmt(650000)} €`,
-    beds: 2,
-    baths: 1,
-    sqm: 98,
-    badge: 'sale',
-    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop&q=80',
-  },
-  {
-    slug: 'villa-piscine-marbella',
-    title: t.prop6_title,
-    location: t.prop6_loc,
-    price: `${fmt(1800000)} €`,
-    beds: 5,
-    baths: 4,
-    sqm: 380,
-    badge: 'exclusive',
-    image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&h=600&fit=crop&q=80',
-  },
-];
+const heroBg = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=2400&h=1600&fit=crop&q=80&auto=format';
 ---
 
 <BaseLayout title={t.meta_title} description={t.meta_description} lang={langKey}>
-  <Header lang={langKey} />
+  <Header lang={langKey} variant="overlay" />
 
   <!-- ═══════════════════════════════════
-       HERO SECTION
+       HERO — Cinéma plein écran
   ═══════════════════════════════════ -->
-  <section class="hero-section" aria-label="Hero">
-    <!-- Background slideshow with Ken Burns -->
-    <div class="hero-bg">
-      <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=1080&fit=crop&q=80');animation-delay:0s"></div>
-      <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&h=1080&fit=crop&q=80');animation-delay:6s"></div>
-      <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1920&h=1080&fit=crop&q=80');animation-delay:12s"></div>
-      <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1920&h=1080&fit=crop&q=80');animation-delay:18s"></div>
-      <!-- Vignette layers -->
-      <div class="hero-vignette"></div>
-      <div class="hero-bg-overlay"></div>
+  <section class="alba-hero">
+    <div class="alba-hero-img-wrap">
+      <img src={heroBg} alt="" class="alba-hero-img" fetchpriority="high" />
+      <div class="alba-hero-veil"></div>
     </div>
 
-    <!-- Decorative left edge -->
-    <div class="hero-edge-left" aria-hidden="true">
-      <span class="edge-text">ESTATO ◆ LUXURY REAL ESTATE</span>
-      <span class="edge-line"></span>
-    </div>
-
-    <!-- ESTATO brand — fills top space like a logo -->
-    <div class="hero-brand-wrap" id="hero-brand-obs" aria-hidden="true">
-      <div class="hero-brand-inner">
-        <span class="hero-brand-name">ESTATO</span><span class="hero-brand-dot">◆</span>
+    <div class="alba-hero-content">
+      <div class="alba-hero-quote">
+        <span class="alba-hero-rule"></span>
+        <p class="italic-quote">{t.hero_quote}</p>
       </div>
     </div>
 
-    <!-- Hero content -->
-    <div class="hero-content">
-      <div class="hero-inner">
-        <!-- Gold pre-title bar -->
-        <div class="hero-pretitle">
-          <span class="pretitle-dot">◆</span>
-          <span class="pretitle-text">{t.hero_label}</span>
-          <span class="pretitle-dot">◆</span>
-        </div>
-
-        <h1 class="hero-title">
-          {heroLines.map((line, i) => (
-            <span class={`hero-line ${i === 1 ? 'hero-line-accent' : ''}`}>{line}</span>
-          ))}
-        </h1>
-
-        <!-- Gold divider under title -->
-        <div class="hero-divider" aria-hidden="true">
-          <span class="divider-line"></span>
-          <span class="divider-diamond">◆</span>
-          <span class="divider-line"></span>
-        </div>
-
-        <p class="hero-subtitle">{t.hero_subtitle}</p>
-
-        <div class="hero-btns">
-          <a href={`#properties`} class="liquid-btn primary hero-cta-main">{t.hero_cta}</a>
-          <a href={`mailto:contact@estato.com`} class="liquid-btn ghost hero-cta-secondary">{t.hero_cta2}</a>
-        </div>
-      </div>
-
-      <!-- Stats strip -->
-      <div class="hero-stats">
-        <div class="stat-item">
-          <span class="stat-number">200+</span>
-          <span class="stat-label">{t.stat_properties || 'Propriétés'}</span>
-        </div>
-        <div class="stat-sep"></div>
-        <div class="stat-item">
-          <span class="stat-number">12</span>
-          <span class="stat-label">{t.stat_countries || 'Pays'}</span>
-        </div>
-        <div class="stat-sep"></div>
-        <div class="stat-item">
-          <span class="stat-number">98%</span>
-          <span class="stat-label">{t.stat_satisfaction || 'Satisfaction'}</span>
-        </div>
-        <div class="stat-sep"></div>
-        <div class="stat-item">
-          <span class="stat-number">15</span>
-          <span class="stat-label">{t.stat_years || 'Années'}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Scroll indicator — mouse icon -->
-    <a href="#properties" class="scroll-indicator" aria-label="Défiler">
-      <div class="scroll-mouse">
-        <div class="scroll-wheel"></div>
-      </div>
-      <span class="scroll-label">SCROLL</span>
+    <a href="#selection" class="alba-hero-cta" aria-label={t.hero_cta_discover}>
+      <span>{t.hero_cta_discover}</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M7 1v12M2 8l5 5 5-5" stroke="currentColor" stroke-width="1"/>
+      </svg>
     </a>
   </section>
 
   <!-- ═══════════════════════════════════
-       PROPERTIES SECTION
+       SÉLECTION
   ═══════════════════════════════════ -->
-  <section id="properties" class="properties-section">
-    <div class="section-wrap">
-      <!-- Section header -->
-      <div class="section-header fade-up">
-        <p class="eyebrow">{t.featured_title}</p>
-        <p class="section-subtitle">{t.featured_subtitle}</p>
+  <section id="selection" class="section">
+    <div class="container">
+      <div class="selection-head">
+        <p class="eyebrow fade-in">{t.selection_eyebrow}</p>
+        <h2 class="selection-title fade-in delay-1">
+          {t.selection_title.split('\n').map((line, i) => <span class="block-line">{line}</span>)}
+        </h2>
+        <div class="rule fade-in delay-2"></div>
+        <p class="selection-lead fade-in delay-2">{t.selection_lead}</p>
       </div>
 
-      <!-- Filter tabs -->
-      <div class="filter-tabs fade-up">
-        <button type="button" class="filter-tab active" data-filter="all">{t.filter_all}</button>
-        <button type="button" class="filter-tab" data-filter="sale">{t.filter_sale}</button>
-        <button type="button" class="filter-tab" data-filter="rent">{t.filter_rent}</button>
-        <button type="button" class="filter-tab" data-filter="new">{t.filter_new}</button>
-        <button type="button" class="filter-tab" data-filter="exclusive">{t.badge_exclusive}</button>
-      </div>
-
-      <!-- Properties grid -->
-      <div class="properties-grid" id="properties-grid">
-        {properties.map((property) => (
-          <div class="property-item" data-badge={property.badge}>
-            <PropertyCard property={property} lang={langKey} />
-          </div>
+      <div class="estates-grid">
+        {estates.map((estate, i) => (
+          <PropertyCard estate={estate} lang={langKey} index={i} />
         ))}
       </div>
     </div>
   </section>
 
   <!-- ═══════════════════════════════════
-       AGENCY SECTION
+       OFF-MARKET — bloc invitation
   ═══════════════════════════════════ -->
-  <section class="agency-section">
-    <div class="section-wrap">
-      <div class="agency-grid">
-        <div class="agency-text fade-up">
-          <p class="eyebrow">{t.agency_eyebrow}</p>
-          <h2 class="agency-title">{t.agency_title}</h2>
-          <p class="agency-lead">{t.agency_lead}</p>
-          <div class="agency-stats">
-            <div class="agency-stat"><span class="agency-stat-n">{t.agency_stat1_n}</span><span class="agency-stat-l">{t.agency_stat1_l}</span></div>
-            <div class="agency-stat-sep"></div>
-            <div class="agency-stat"><span class="agency-stat-n">{t.agency_stat2_n}</span><span class="agency-stat-l">{t.agency_stat2_l}</span></div>
-            <div class="agency-stat-sep"></div>
-            <div class="agency-stat"><span class="agency-stat-n">{t.agency_stat3_n}</span><span class="agency-stat-l">{t.agency_stat3_l}</span></div>
-          </div>
-        </div>
-        <div class="agency-values fade-up">
-          {[
-            { title: t.agency_value1_title, desc: t.agency_value1_desc, icon: '◈' },
-            { title: t.agency_value2_title, desc: t.agency_value2_desc, icon: '◇' },
-            { title: t.agency_value3_title, desc: t.agency_value3_desc, icon: '◆' },
-          ].map(v => (
-            <div class="agency-value-card">
-              <span class="agency-value-icon">{v.icon}</span>
-              <div>
-                <p class="agency-value-title">{v.title}</p>
-                <p class="agency-value-desc">{v.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+  <section class="alba-offmarket section">
+    <div class="container-narrow">
+      <p class="eyebrow fade-in" style="text-align:center">{t.offmarket_eyebrow}</p>
+      <h2 class="alba-offmarket-title fade-in delay-1">{t.offmarket_title}</h2>
+      <div class="rule rule-center fade-in delay-2"></div>
+      <p class="alba-offmarket-lead fade-in delay-2">{t.offmarket_lead}</p>
+      <div class="alba-offmarket-cta fade-in delay-3">
+        <a href={`/${langKey}/off-market`} class="cta-ghost">
+          <span>{t.nav_offmarket}</span>
+          <span class="arrow">→</span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════
-       PROCESS SECTION
-  ═══════════════════════════════════ -->
-  <section class="process-section">
-    <div class="section-wrap">
-      <div class="section-header fade-up" style="text-align:center;margin-bottom:3rem">
-        <p class="eyebrow" style="justify-content:center">{t.process_eyebrow}</p>
-        <h2 class="process-title">{t.process_title}</h2>
-      </div>
-      <div class="process-steps">
-        {[
-          { n: t.process_step1_n, title: t.process_step1_title, desc: t.process_step1_desc },
-          { n: t.process_step2_n, title: t.process_step2_title, desc: t.process_step2_desc },
-          { n: t.process_step3_n, title: t.process_step3_title, desc: t.process_step3_desc },
-        ].map((step, i) => (
-          <div class={`process-step fade-up`} style={`animation-delay:${i * 0.15}s`}>
-            <div class="process-step-inner">
-              <span class="process-step-n">{step.n}</span>
-              <div class="process-step-line" aria-hidden="true"></div>
-              <h3 class="process-step-title">{step.title}</h3>
-              <p class="process-step-desc">{step.desc}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════
-       CTA SECTION
-  ═══════════════════════════════════ -->
-  <section class="cta-section">
-    <div class="cta-inner fade-up">
-      <div class="cta-content">
-        <p class="eyebrow" style="justify-content:center">{t.badge_exclusive}</p>
-        <h2 class="cta-title">{t.cta_section_title}</h2>
-        <p class="cta-subtitle">{t.cta_section_subtitle}</p>
-        <a href={`mailto:contact@estato.com`} class="liquid-btn primary cta-btn">{t.cta_btn}</a>
-      </div>
-      <!-- Decorative image -->
-      <div class="cta-image-wrap">
-        <img
-          src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop&q=80"
-          alt=""
-          class="cta-image"
-          loading="lazy"
-          width="600"
-          height="400"
-        />
-        <div class="cta-image-overlay"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════
-       FOOTER
-  ═══════════════════════════════════ -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <span class="footer-logo">ESTATO</span>
-        <span class="footer-logo-dot">◆</span>
-        <p class="footer-tagline">{t.footer_tagline}</p>
-      </div>
-
-      <div class="footer-links">
-        <a href={`/${langKey}/#properties`}>{t.nav_properties}</a>
-        <a href={`mailto:${t.footer_contact}`}>{t.footer_contact}</a>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <span>{t.footer_rights}</span>
-      <span class="footer-by">
-        {t.footer_by} <a href="https://ultras-sites.com" target="_blank" rel="noopener" class="footer-us-link">Ultras-Sites</a>
-      </span>
-    </div>
-  </footer>
+  <Footer lang={langKey} />
 </BaseLayout>
 
 <style>
-  /* ══════════════════════════════════════
-     HERO — PREMIUM LUXURY
-  ══════════════════════════════════════ */
-  .hero-section {
+  /* ═══ HERO ═══ */
+  .alba-hero {
     position: relative;
     height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    min-height: 640px;
+    width: 100%;
     overflow: hidden;
-    padding-top: 10vh; /* space for mobile header */
+    background: #1a1a1a;
   }
 
-  @media (min-width: 768px) {
-    .hero-section {
-      padding-top: 0;
-    }
-  }
-
-  /* ── BACKGROUND SLIDESHOW ── */
-  .hero-bg {
+  .alba-hero-img-wrap {
     position: absolute;
     inset: 0;
     z-index: 0;
   }
 
-  .hero-slide {
-    position: absolute;
-    inset: -5%; /* extra space for Ken Burns scale */
-    background-size: cover;
-    background-position: center;
-    opacity: 0;
-    animation: heroFade 24s infinite, kenBurns 24s infinite;
-  }
-
-  @keyframes heroFade {
-    0%   { opacity: 0; }
-    4%   { opacity: 1; }
-    25%  { opacity: 1; }
-    33%  { opacity: 0; }
-    100% { opacity: 0; }
-  }
-
-  @keyframes kenBurns {
-    0%   { transform: scale(1) translate(0, 0); }
-    100% { transform: scale(1.08) translate(-1%, 1%); }
-  }
-
-  /* Vignette (dark edges) */
-  .hero-vignette {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 40%, var(--hero-overlay) 100%);
-    z-index: 1;
-  }
-
-  /* Gradient overlay — rich, dramatic */
-  .hero-bg-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    background:
-      linear-gradient(to bottom,
-        rgba(var(--accent-rgb), 0.1) 0%,
-        transparent 30%,
-        transparent 55%,
-        var(--hero-overlay) 85%,
-        var(--bg) 100%
-      ),
-      linear-gradient(to right,
-        var(--hero-overlay) 0%,
-        transparent 30%,
-        transparent 70%,
-        var(--hero-overlay) 100%
-      );
-  }
-
-  /* ── DECORATIVE LEFT EDGE ── */
-  .hero-edge-left {
-    display: none;
-    position: absolute;
-    left: 2rem;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 3;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  @media (min-width: 1024px) {
-    .hero-edge-left { display: flex; }
-  }
-
-  .edge-text {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    transform: rotate(180deg);
-    font-size: 0.5rem;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: rgba(201, 168, 76, 0.5);
-    font-family: 'Outfit', sans-serif;
-    font-weight: 500;
-  }
-
-  .edge-line {
-    width: 1px;
-    height: 80px;
-    background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.4), transparent);
-  }
-
-  /* ── HERO BRAND (ESTATO large logo in top space) ── */
-  .hero-brand-wrap {
-    top: 7vh;
-    left: 0;
-    right: 0;
-    z-index: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    pointer-events: none;
-  }
-  @media (min-width: 768px) {
-    .hero-brand-wrap {
-      top: 10vh;
-    }
-  }
-
-  .hero-brand-inner {
-    display: flex;
-    align-items: flex-start;
-    gap: 0;
-  }
-
-  .hero-brand-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(3rem, 15vw, 15rem);
-    letter-spacing: 0.05em;
-    color: var(--text);
-    opacity: 0.08;
-    line-height: 1;
-  }
-
-  .hero-brand-dot {
-    color: var(--accent);
-    font-size: 0.7rem;
-    vertical-align: super;
-    margin-left: 0.2em;
-  }
-
-  /* ── HERO CONTENT ── */
-  .hero-content {
-    position: relative;
-    z-index: 3;
-    width: 100%;
-    max-width: 1400px;
-    padding: 0 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(1.5rem, 4vh, 2.5rem);
-    text-align: center;
-  }
-
-  @media (min-width: 768px) {
-    .hero-content {
-      padding: 0 3rem;
-    }
-  }
-
-  .hero-inner {
-    max-width: 800px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* Pre-title (replaces eyebrow) */
-  .hero-pretitle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: clamp(1.2rem, 3vh, 2rem);
-    padding: 0.55rem 1.5rem;
-    background: var(--glass-bg);
-    border: 1px solid var(--accent);
-    border-radius: 100px;
-    box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.15);
-  }
-
-  .pretitle-dot {
-    color: var(--accent);
-    font-size: 0.35rem;
-    opacity: 0.8;
-  }
-
-  .pretitle-text {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-
-  /* Hero title */
-  .hero-title {
-    display: flex;
-    flex-direction: column;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(3.5rem, 9vw, 8rem);
-    line-height: 0.88;
-    letter-spacing: 0.01em;
-    margin-bottom: clamp(1.2rem, 3vh, 2rem);
-  }
-
-  .hero-line {
-    display: block;
-    color: #ffffff;
-    -webkit-text-stroke: 0;
-    text-shadow:
-      0 2px 12px rgba(0, 0, 0, 0.6),
-      0 1px 3px rgba(0, 0, 0, 0.8);
-  }
-
-  /* Gold divider */
-  .hero-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: clamp(1.2rem, 3vh, 2rem);
-  }
-
-  .divider-line {
-    height: 1px;
-    width: 60px;
-    background: linear-gradient(to right, transparent, rgba(201,168,76,0.6));
-  }
-
-  .divider-line:last-child {
-    background: linear-gradient(to left, transparent, rgba(201,168,76,0.6));
-  }
-
-  .divider-diamond {
-    color: var(--accent);
-    font-size: 0.45rem;
-    opacity: 0.8;
-  }
-
-  .hero-subtitle {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(1rem, 2vw, 1.2rem);
-    color: rgba(255, 255, 255, 0.92);
-    line-height: 1.6;
-    font-weight: 300;
-    margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
-    max-width: 540px;
-    margin-left: auto;
-    margin-right: auto;
-    letter-spacing: 0.02em;
-    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-  }
-
-  .hero-btns {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-  }
-
-  /* ── HERO CTA PULSE GLOW ── */
-  @keyframes ctaPulseGlow {
-    0%, 100% {
-      box-shadow:
-        inset 0 1px 1px rgba(255,255,255,0.4),
-        0 10px 30px rgba(var(--accent-rgb), 0.3),
-        0 0 0 0 rgba(var(--accent-rgb), 0.4);
-    }
-    50% {
-      box-shadow:
-        inset 0 1px 1px rgba(255,255,255,0.4),
-        0 10px 30px rgba(var(--accent-rgb), 0.5),
-        0 0 0 10px rgba(var(--accent-rgb), 0);
-    }
-  }
-
-  .hero-cta-main {
-    animation: btnEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.45s both,
-               ctaPulseGlow 2.5s ease-in-out 2.5s infinite;
-    font-size: clamp(0.85rem, 2.5vw, 1rem);
-    padding: 1.2rem 2.8rem;
-  }
-
-  .hero-cta-secondary {
-    animation: btnEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.6s both;
-    font-size: clamp(0.85rem, 2.5vw, 1rem);
-    padding: 1.2rem 2.8rem;
-  }
-
-  @media (max-width: 600px) {
-    .hero-cta-main {
-      width: 100%;
-      justify-content: center;
-      font-size: 0.9rem;
-      padding: 1.2rem 2rem;
-    }
-    .hero-cta-secondary {
-      width: 100%;
-      justify-content: center;
-      font-size: 0.85rem;
-      padding: 1.1rem 2rem;
-    }
-  }
-
-  /* ══════════════════════════════════════
-     HERO ENTRY ANIMATIONS — CSS only
-  ══════════════════════════════════════ */
-
-  @keyframes brandDrop {
-    from { opacity: 0; transform: translateY(-20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes pretitleSlide {
-    from { opacity: 0; transform: translateX(-15px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-
-  @keyframes lineReveal {
-    from { clip-path: inset(100% 0 0 0); transform: translateY(40px); opacity: 0; }
-    to   { clip-path: inset(0% 0 0 0);   transform: translateY(0);    opacity: 1; }
-  }
-
-  @keyframes dividerExpand {
-    from { opacity: 0; transform: scaleX(0); }
-    to   { opacity: 1; transform: scaleX(1); }
-  }
-
-  @keyframes fadeRise {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes btnEntrance {
-    from { opacity: 0; transform: translateY(20px) scale(0.95); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  /* Shimmer on accent line */
-  @keyframes shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position:  200% center; }
-  }
-
-  /* Element animations */
-  .hero-brand-wrap {
-    animation: brandDrop 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
-  }
-
-  .hero-pretitle {
-    animation: pretitleSlide 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
-  }
-
-  .hero-line:not(.hero-line-accent) {
-    animation: lineReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.65s both;
-  }
-
-  .hero-line-accent {
-    animation: lineReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.85s both,
-               shimmer 4s linear 1.8s infinite;
-    color: var(--accent);
-    -webkit-text-stroke: 0;
-    text-stroke: 0;
-    text-shadow:
-      0 2px 16px rgba(0, 0, 0, 0.6),
-      0 0 30px rgba(201, 168, 76, 0.3);
-    background: linear-gradient(90deg, var(--accent-dark), var(--accent) 30%, #f5d98b 50%, var(--accent) 70%, var(--accent-dark));
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .hero-divider {
-    animation: dividerExpand 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1.1s both;
-    transform-origin: center;
-  }
-
-  .hero-subtitle {
-    animation: fadeRise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1.25s both;
-  }
-
-  .hero-btns {
-    animation: btnEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.45s both;
-  }
-
-  @keyframes statsRise {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── STATS STRIP ── */
-  .hero-stats {
-    animation: statsRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.65s both;
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur) saturate(180%);
-    -webkit-backdrop-filter: var(--glass-blur) saturate(180%);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    overflow: hidden;
-    margin-top: clamp(1rem, 3vh, 2.5rem);
-    margin-bottom: calc(20px + env(safe-area-inset-bottom)); /* reduced to improve centering */
-  }
-
-  .stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.3rem;
-    padding: clamp(1rem, 2vh, 1.5rem) clamp(1.5rem, 3vw, 2.5rem);
-    position: relative;
-  }
-
-  .stat-item::before {
-    content: '';
-    position: absolute;
-    inset: 20% 0;
-    left: 0;
-    width: 1px;
-    background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.2), transparent);
-  }
-
-  .stat-item:first-child::before { display: none; }
-
-  .stat-number {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    letter-spacing: 0.05em;
-    color: var(--accent);
-    line-height: 1;
-  }
-
-  .stat-label {
-    font-size: 0.52rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.85);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-    font-family: 'Outfit', sans-serif;
-    white-space: nowrap;
-  }
-
-  .stat-sep { display: none; } /* hidden — use ::before on stat-item instead */
-
-  @media (max-width: 600px) {
-    .hero-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-radius: 16px;
-    }
-    .stat-item {
-      padding: 1.2rem 1rem;
-      border-bottom: 1px solid rgba(201,168,76,0.1);
-    }
-    .stat-item:nth-child(odd)::before { display: none; }
-    .stat-item:nth-child(even)::before { display: block; }
-    .stat-number { font-size: 1.6rem; }
-  }
-
-  /* ── SCROLL INDICATOR — MOUSE ICON ── */
-  .scroll-indicator {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-    text-decoration: none;
-    animation: scrollFloat 3s ease-in-out infinite;
-  }
-
-  @keyframes scrollFloat {
-    0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.7; }
-    50%       { transform: translateX(-50%) translateY(6px); opacity: 1; }
-  }
-
-  .scroll-mouse {
-    width: 22px;
-    height: 34px;
-    border: 1.5px solid rgba(201,168,76,0.5);
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    padding-top: 5px;
-  }
-
-  .scroll-wheel {
-    width: 3px;
-    height: 6px;
-    background: var(--accent);
-    border-radius: 2px;
-    animation: scrollWheelMove 2s ease-in-out infinite;
-  }
-
-  @keyframes scrollWheelMove {
-    0%, 100% { transform: translateY(0); opacity: 1; }
-    60%       { transform: translateY(8px); opacity: 0; }
-  }
-
-  .scroll-label {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.45rem;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: rgba(201,168,76,0.5);
-  }
-
-  /* ══════════════════════════════════════
-     PROPERTIES SECTION
-  ══════════════════════════════════════ */
-  .properties-section {
-    padding: 6rem 0 8rem;
-  }
-
-  .section-wrap {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  .section-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .section-header .eyebrow {
-    justify-content: center;
-  }
-
-  /* Filter tabs */
-  .filter-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 3rem;
-  }
-
-  .filter-tab {
-    padding: 0.55rem 1.4rem;
-    border-radius: 999px;
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    font-family: 'Outfit', sans-serif;
-    cursor: pointer;
-    border: 1px solid var(--glass-border);
-    background: transparent;
-    color: var(--text3);
-    transition: all 0.3s var(--transition-spring);
-  }
-
-  .filter-tab:hover {
-    border-color: rgba(var(--accent-rgb), 0.4);
-    color: var(--text2);
-  }
-
-  .filter-tab.active {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-    border-color: var(--accent);
-    color: #000;
-    box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.35);
-  }
-
-  /* Properties grid */
-  .properties-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-  }
-
-  @media (min-width: 900px) {
-    .properties-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  @media (max-width: 600px) {
-    .properties-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .property-item.hidden {
-    display: none;
-  }
-
-  /* ══════════════════════════════════════
-     CTA SECTION
-  ══════════════════════════════════════ */
-  /* ── Agency Section ── */
-  .agency-section { padding: 5rem 2rem; background: #0a0a0a; }
-  .agency-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-  @media (max-width: 768px) { .agency-grid { grid-template-columns: 1fr; gap: 3rem; } }
-  .agency-title { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; color: #fff; line-height: 1.2; margin: 0.75rem 0 1rem; }
-  .agency-lead { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.55); margin-bottom: 2rem; }
-  .agency-stats { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
-  .agency-stat { display: flex; flex-direction: column; }
-  .agency-stat-n { font-size: 1.8rem; font-weight: 800; color: #c9a84c; letter-spacing: -0.03em; }
-  .agency-stat-l { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.4); margin-top: 2px; }
-  .agency-stat-sep { width: 1px; height: 2.5rem; background: rgba(201,168,76,0.3); flex-shrink: 0; }
-  .agency-values { display: flex; flex-direction: column; gap: 1.5rem; }
-  .agency-value-card { display: flex; gap: 1.25rem; align-items: flex-start; padding: 1.25rem; border: 1px solid rgba(201,168,76,0.12); border-radius: 14px; background: rgba(201,168,76,0.03); transition: border-color 0.3s, background 0.3s; }
-  .agency-value-card:hover { border-color: rgba(201,168,76,0.3); background: rgba(201,168,76,0.06); }
-  .agency-value-icon { font-size: 1.3rem; color: #c9a84c; flex-shrink: 0; margin-top: 2px; }
-  .agency-value-title { font-size: 0.85rem; font-weight: 700; color: #fff; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.4rem; }
-  .agency-value-desc { font-size: 0.8rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
-
-  /* ── Process Section ── */
-  .process-section { padding: 5rem 2rem; background: #080808; border-top: 1px solid rgba(201,168,76,0.08); }
-  .process-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: #fff; letter-spacing: -0.02em; margin-top: 0.5rem; }
-  .process-steps { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; position: relative; }
-  @media (max-width: 768px) { .process-steps { grid-template-columns: 1fr; gap: 1.5rem; } }
-  .process-step { padding: 2.5rem; border: 1px solid rgba(201,168,76,0.12); position: relative; background: #0a0a0a; transition: border-color 0.3s, background 0.3s; }
-  .process-step:hover { border-color: rgba(201,168,76,0.35); background: rgba(201,168,76,0.03); }
-  .process-step-n { display: block; font-size: 3rem; font-weight: 900; color: rgba(201,168,76,0.15); letter-spacing: -0.05em; line-height: 1; margin-bottom: 1.5rem; }
-  .process-step-line { width: 2rem; height: 2px; background: linear-gradient(90deg, #c9a84c, transparent); margin-bottom: 1rem; }
-  .process-step-title { font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.75rem; }
-  .process-step-desc { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
-
-  .cta-section {
-    padding: 2rem 2rem 6rem;
-  }
-
-  .cta-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    border-radius: 28px;
-    overflow: hidden;
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: 400px;
-    border: 1px solid var(--glass-border);
-    background: var(--bg2);
-  }
-
-  @media (max-width: 768px) {
-    .cta-inner {
-      grid-template-columns: 1fr;
-    }
-    .cta-image-wrap {
-      display: none;
-    }
-  }
-
-  .cta-content {
-    padding: 4rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1.25rem;
-    position: relative;
-    z-index: 2;
-  }
-
-  .cta-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 3.5vw, 3rem);
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.1;
-  }
-
-  .cta-subtitle {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.9rem;
-    color: var(--text2);
-    line-height: 1.6;
-    max-width: 420px;
-  }
-
-  .cta-btn {
-    align-self: flex-start;
-    margin-top: 0.5rem;
-    animation: ctaPulseGlow 2.5s ease-in-out infinite;
-    font-size: clamp(0.85rem, 2vw, 1rem);
-    padding: 1.1rem 2.5rem;
-  }
-
-  @media (max-width: 768px) {
-    .cta-btn {
-      align-self: stretch;
-      justify-content: center;
-    }
-  }
-
-  .cta-image-wrap {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .cta-image {
+  .alba-hero-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scale(1.02);
+    animation: heroKenBurns 18s ease-out forwards;
   }
 
-  .cta-image-overlay {
+  @keyframes heroKenBurns {
+    from { transform: scale(1.02); }
+    to { transform: scale(1.08); }
+  }
+
+  .alba-hero-veil {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, var(--bg2) 0%, transparent 40%);
+    background:
+      linear-gradient(180deg,
+        rgba(0,0,0,0.35) 0%,
+        rgba(0,0,0,0.15) 30%,
+        rgba(0,0,0,0.25) 70%,
+        rgba(0,0,0,0.55) 100%);
   }
 
-  /* ══════════════════════════════════════
-     FOOTER
-  ══════════════════════════════════════ */
-  .site-footer {
-    border-top: 1px solid var(--glass-border);
-    padding: 3rem 2rem 2rem;
+  .alba-hero-content {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 2;
+    padding: clamp(2rem, 6vw, 5rem);
+    max-width: 600px;
   }
 
-  .footer-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 2rem;
-    flex-wrap: wrap;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--glass-border);
-    margin-bottom: 1.5rem;
-  }
-
-  .footer-brand {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .footer-logo-wrap {
+  .alba-hero-quote {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 1.5rem;
+    color: #FBF8F2;
   }
 
-  .footer-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.8rem;
-    letter-spacing: 0.2em;
-    color: var(--text);
-    line-height: 1;
+  .alba-hero-rule {
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+    flex-shrink: 0;
   }
 
-  .footer-logo-dot {
-    color: var(--accent);
-    font-size: 0.5rem;
-    margin-left: 0.3rem;
+  .alba-hero-quote p {
+    font-size: clamp(1.2rem, 2.4vw, 1.7rem);
+    line-height: 1.4;
+    letter-spacing: 0.005em;
+    color: #FBF8F2;
+    animation: heroQuoteFade 1.6s var(--transition-slow) 0.5s both;
   }
 
-  .footer-tagline {
-    font-family: 'Cormorant Garamond', serif;
+  @keyframes heroQuoteFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .alba-hero-cta {
+    position: absolute;
+    bottom: clamp(2rem, 5vw, 4rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    color: #FBF8F2;
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(251, 248, 242, 0.4);
+    transition: border-color 0.4s, color 0.4s;
+    animation: heroCtaFade 1.4s var(--transition-slow) 1.2s both;
+  }
+
+  .alba-hero-cta:hover {
+    color: var(--accent-soft);
+    border-bottom-color: var(--accent-soft);
+  }
+
+  .alba-hero-cta svg {
+    animation: heroArrowBob 2.5s ease-in-out infinite;
+  }
+
+  @keyframes heroArrowBob {
+    0%, 100% { transform: translateY(0); opacity: 0.7; }
+    50% { transform: translateY(4px); opacity: 1; }
+  }
+
+  @keyframes heroCtaFade {
+    from { opacity: 0; transform: translate(-50%, 20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  @media (max-width: 768px) {
+    .alba-hero-content {
+      max-width: 90%;
+      padding-bottom: 7rem;
+    }
+    .alba-hero-quote {
+      gap: 1rem;
+    }
+    .alba-hero-rule {
+      width: 40px;
+    }
+  }
+
+  /* ═══ SÉLECTION ═══ */
+  .selection-head {
+    max-width: 760px;
+    margin: 0 auto clamp(4rem, 8vw, 7rem);
+    text-align: center;
+  }
+
+  .selection-title {
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 1.05;
+  }
+
+  .selection-title .block-line {
+    display: block;
+  }
+
+  .selection-head .rule {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .selection-lead {
+    font-family: var(--serif-text);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-soft);
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .estates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: clamp(2rem, 5vw, 4rem);
+    row-gap: clamp(4rem, 8vw, 7rem);
+  }
+
+  @media (max-width: 700px) {
+    .estates-grid {
+      grid-template-columns: 1fr;
+      row-gap: 3.5rem;
+    }
+  }
+
+  /* ═══ OFF-MARKET BLOC ═══ */
+  .alba-offmarket {
+    background: var(--bg-soft);
+    text-align: center;
+  }
+
+  .alba-offmarket-title {
+    font-size: clamp(2rem, 4.2vw, 3.2rem);
     font-style: italic;
-    font-size: 0.9rem;
-    color: var(--text3);
-    margin-top: 0.25rem;
-  }
-
-  .footer-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    align-items: flex-end;
-  }
-
-  .footer-links a {
-    font-size: 0.75rem;
-    color: var(--text2);
-    font-family: 'Outfit', sans-serif;
-    transition: color 0.3s;
-  }
-
-  .footer-links a:hover {
-    color: var(--accent);
-  }
-
-  .footer-bottom {
-    max-width: 1200px;
+    font-weight: 400;
+    line-height: 1.15;
+    max-width: 720px;
     margin: 0 auto;
+  }
+
+  .alba-offmarket-lead {
+    font-family: var(--serif-text);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-soft);
+    max-width: 540px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .alba-offmarket-cta {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    font-size: 0.68rem;
-    color: var(--text3);
-    font-family: 'Outfit', sans-serif;
+    justify-content: center;
   }
-
-  .footer-by { display: flex; gap: 0.3rem; }
-
-  .footer-us-link {
-    color: var(--accent);
-    transition: opacity 0.3s;
-  }
-
-  .footer-us-link:hover { opacity: 0.7; }
 </style>
-
-<script is:inline>
-  // Filter tabs
-  (function() {
-    var tabs = document.querySelectorAll('.filter-tab');
-    var items = document.querySelectorAll('.property-item');
-
-    tabs.forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        var filter = tab.getAttribute('data-filter');
-
-        tabs.forEach(function(t) { t.classList.remove('active'); });
-        tab.classList.add('active');
-
-        items.forEach(function(item) {
-          if (filter === 'all') {
-            item.classList.remove('hidden');
-          } else {
-            var badge = item.getAttribute('data-badge');
-            if (badge === filter) {
-              item.classList.remove('hidden');
-            } else {
-              item.classList.add('hidden');
-            }
-          }
-        });
-      });
-    });
-  })();
-
-  // IntersectionObserver — show header logo when ESTATO brand exits viewport
-  (function() {
-    var brandObs = document.getElementById('hero-brand-obs');
-    var headerLogo = document.getElementById('header-logo-link');
-    if (!brandObs || !headerLogo) return;
-
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (!entry.isIntersecting) {
-          // brand has left viewport — show header logo
-          headerLogo.classList.add('logo-visible');
-        } else {
-          // brand is back in viewport — hide header logo
-          headerLogo.classList.remove('logo-visible');
-        }
-      });
-    }, { threshold: 0 });
-
-    observer.observe(brandObs);
-  })();
-</script>

@@ -5,9 +5,10 @@ interface Props {
   title: string;
   description: string;
   lang: string;
+  hideHeader?: boolean;
 }
 
-const { title, description, lang } = Astro.props;
+const { title, description, lang, hideHeader = false } = Astro.props;
 const langKey = lang && lang in translations ? lang : 'fr';
 const siteUrl = Astro.site || 'https://immobilier.ultras-sites.com';
 const canonicalURL = new URL(Astro.url.pathname, siteUrl);
@@ -22,12 +23,12 @@ const alternateLinks = Object.keys(languages).map((l) => ({
 ---
 
 <!doctype html>
-<html lang={langKey} data-theme="dark" id="html-root">
+<html lang={langKey} data-theme="cream" id="html-root">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#071a10" />
+    <meta name="theme-color" content="#F5F1EA" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href={canonicalURL} />
     <title>{title}</title>
@@ -46,373 +47,396 @@ const alternateLinks = Object.keys(languages).map((l) => ({
     ))}
     <link rel="alternate" hreflang="x-default" href={`${siteUrl}/fr/`} />
 
-    <!-- Fonts -->
+    <!-- Fonts non-blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="dns-prefetch" href="https://images.unsplash.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@200;300;400;500;600&display=optional"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <slot name="head" />
 
     <style is:global>
       /* ══════════════════════════════════════
-         ESTATO — DARK LUXURY REAL ESTATE
+         MAISON ALBA — HAUTE COUTURE IMMOBILIER
+         Palette crème + or muet (Christie's / Knight Frank)
       ══════════════════════════════════════ */
       :root {
-        /* Common tokens */
-        --radius-card: 20px;
-        --radius-btn: 999px;
-        --transition-spring: cubic-bezier(0.22, 1, 0.36, 1);
-        --glass-blur: blur(24px);
+        --transition-slow: cubic-bezier(0.22, 1, 0.36, 1);
+        --serif-display: 'Cormorant Garamond', 'EB Garamond', 'Times New Roman', serif;
+        --serif-text: 'EB Garamond', 'Cormorant Garamond', serif;
+        --sans: 'Inter', system-ui, -apple-system, sans-serif;
       }
 
-      /* ══════════ DARK LUXURY THEME ══════════ */
-      [data-theme="dark"] {
-        --bg: #05111f;
-        --bg2: #081828;
-        --bg3: #0d2035;
-        --accent: #c9a84c;
-        --accent-rgb: 201, 168, 76;
-        --accent-dark: #8a6d25;
-        --text: #f0f4f8;
-        --text2: #8aa5bf;
-        --text3: #5a7a95;
-        --glass-bg: rgba(5, 17, 31, 0.55);
-        --glass-border: rgba(201, 168, 76, 0.1);
-        --glass-shine: rgba(201, 168, 76, 0.15);
-        --hero-overlay: rgba(5, 17, 31, 0.65);
+      [data-theme="cream"] {
+        --bg: #F5F1EA;
+        --bg-soft: #EFE9DE;
+        --bg-card: #FBF8F2;
+        --text: #1A1A1A;
+        --text-soft: #4A4A4A;
+        --text-muted: #8A8378;
+        --line: rgba(26, 26, 26, 0.10);
+        --line-strong: rgba(26, 26, 26, 0.22);
+        --accent: #B89A5C;
+        --accent-soft: #C9B27D;
+        --sage: #7B8264;
       }
 
-      /* ══════════ EMERALD ESTATE THEME (Deep Green Luxury) ══════════ */
-      [data-theme="emerald"] {
-        --bg: #071a10;
-        --bg2: #0d2518;
-        --bg3: #133020;
-        --accent: #e8b84b;
-        --accent-rgb: 232, 184, 75;
-        --accent-dark: #b88c28;
-        --text: #e8f5ed;
-        --text2: #8ab89a;
-        --text3: #5a8a6a;
-        --glass-bg: rgba(7, 26, 16, 0.55);
-        --glass-border: rgba(232, 184, 75, 0.12);
-        --glass-shine: rgba(232, 184, 75, 0.18);
-        --hero-overlay: rgba(7, 26, 16, 0.6);
+      [data-theme="noir"] {
+        --bg: #0D0D0D;
+        --bg-soft: #141414;
+        --bg-card: #181818;
+        --text: #E8E2D5;
+        --text-soft: #B8B3A8;
+        --text-muted: #7A7468;
+        --line: rgba(232, 226, 213, 0.10);
+        --line-strong: rgba(232, 226, 213, 0.22);
+        --accent: #B89A5C;
+        --accent-soft: #C9B27D;
+        --sage: #7B8264;
       }
 
-      /* ══════════ BORDEAUX ESTATE THEME (Wine & Gold Luxury) ══════════ */
-      [data-theme="bordeaux"] {
-        --bg: #1a0810;
-        --bg2: #260d18;
-        --bg3: #331220;
-        --accent: #d4a853;
-        --accent-rgb: 212, 168, 83;
-        --accent-dark: #9a7530;
-        --text: #f5edf0;
-        --text2: #c09aaa;
-        --text3: #8a6a78;
-        --glass-bg: rgba(26, 8, 16, 0.58);
-        --glass-border: rgba(212, 168, 83, 0.12);
-        --glass-shine: rgba(212, 168, 83, 0.18);
-        --hero-overlay: rgba(26, 8, 16, 0.65);
-      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      /* ══════════ SLATE PRESTIGE THEME (Charcoal & Silver Luxury) ══════════ */
-      [data-theme="slate"] {
-        --bg: #0e1218;
-        --bg2: #151c25;
-        --bg3: #1c2530;
-        --accent: #b8c8d8;
-        --accent-rgb: 184, 200, 216;
-        --accent-dark: #8090a0;
-        --text: #e8eef4;
-        --text2: #8898aa;
-        --text3: #586878;
-        --glass-bg: rgba(14, 18, 24, 0.6);
-        --glass-border: rgba(184, 200, 216, 0.1);
-        --glass-shine: rgba(184, 200, 216, 0.15);
-        --hero-overlay: rgba(14, 18, 24, 0.65);
+      html {
+        scroll-behavior: smooth;
+        background: var(--bg);
+        color: var(--text);
       }
-
-      /* ══════════ RESET & BASE ══════════ */
-      *, *::before, *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      html { scroll-behavior: smooth; }
 
       body {
-        font-family: 'Outfit', sans-serif;
+        font-family: var(--sans);
+        font-weight: 300;
         background: var(--bg);
         color: var(--text);
         -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
         overflow-x: hidden;
-        padding-bottom: calc(120px + env(safe-area-inset-bottom));
+        line-height: 1.6;
+        font-size: 16px;
+        letter-spacing: 0.01em;
       }
 
       img { display: block; max-width: 100%; }
       a { text-decoration: none; color: inherit; }
+      button { font-family: inherit; cursor: pointer; }
 
-      /* Subtle noise overlay */
-      body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");
-        pointer-events: none;
-      }
-
-      /* ══════════ LIQUID GLASS SYSTEM ══════════ */
-      .liquid-glass {
-        background: var(--glass-bg);
-        backdrop-filter: var(--glass-blur) saturate(180%);
-        -webkit-backdrop-filter: var(--glass-blur) saturate(180%);
-        border: 1px solid var(--glass-border);
-        box-shadow:
-          inset 0 1px 1px var(--glass-shine),
-          0 8px 32px rgba(0, 0, 0, 0.5);
-      }
-
-      /* ══════════ BUTTONS ══════════ */
-      .liquid-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-        background: var(--glass-bg);
-        backdrop-filter: var(--glass-blur) saturate(200%);
-        -webkit-backdrop-filter: var(--glass-blur) saturate(200%);
-        border: 1px solid var(--accent);
-        border-radius: var(--radius-btn);
-        color: var(--accent);
-        font-family: 'Outfit', sans-serif;
-        font-size: clamp(0.8rem, 2.2vw, 0.95rem);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.25em;
-        padding: 1.1rem 2.5rem;
-        cursor: pointer;
-        box-shadow:
-          inset 0 1px 1px var(--glass-shine),
-          0 8px 24px rgba(var(--accent-rgb), 0.2);
-        transition: all 0.4s var(--transition-spring);
-      }
-
-      .liquid-btn::before {
-        content: '';
-        position: absolute;
-        top: 0; left: -100%;
-        width: 100%; height: 100%;
-        background: linear-gradient(120deg, transparent, var(--glass-shine), transparent);
-        transition: all 0.6s ease;
-      }
-
-      .liquid-btn:hover::before { left: 100%; }
-
-      .liquid-btn:hover {
-        transform: translateY(-3px);
-        background: rgba(var(--accent-rgb), 0.15);
-        box-shadow:
-          inset 0 1px 1px var(--glass-shine),
-          0 12px 32px rgba(var(--accent-rgb), 0.35);
-      }
-
-      .liquid-btn.primary {
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-        color: #000;
-        border-color: var(--accent);
-        font-weight: 700;
-        box-shadow:
-          inset 0 1px 1px rgba(255,255,255,0.4),
-          0 10px 30px rgba(var(--accent-rgb), 0.3);
-      }
-      
-      .liquid-btn.primary:hover {
-        box-shadow:
-          inset 0 1px 1px rgba(255,255,255,0.5),
-          0 15px 45px rgba(var(--accent-rgb), 0.5);
-        transform: translateY(-4px) scale(1.02);
-      }
-
-      .liquid-btn.ghost {
-        background: transparent;
-        color: var(--text2);
-        border-color: var(--glass-border);
-        box-shadow: none;
-      }
-
-      .liquid-btn.ghost:hover {
-        border-color: var(--text);
+      /* ══════════ TYPOGRAPHY ══════════ */
+      h1, h2, h3, h4, .display {
+        font-family: var(--serif-display);
+        font-weight: 400;
+        letter-spacing: -0.005em;
+        line-height: 1.1;
         color: var(--text);
-        background: rgba(255,255,255,0.05);
       }
 
-      /* ══════════ SECTION HEADERS ══════════ */
+      h1 { font-size: clamp(2.5rem, 6vw, 5rem); }
+      h2 { font-size: clamp(2rem, 4.5vw, 3.5rem); }
+      h3 { font-size: clamp(1.4rem, 2.4vw, 2rem); }
+
+      .italic-quote {
+        font-family: var(--serif-display);
+        font-style: italic;
+        font-weight: 300;
+      }
+
+      /* ══════════ EYEBROW (très discret) ══════════ */
       .eyebrow {
-        font-size: 0.6rem;
-        letter-spacing: 0.6em;
+        font-family: var(--sans);
+        font-size: 0.7rem;
+        letter-spacing: 0.35em;
         text-transform: uppercase;
-        font-weight: 500;
-        color: var(--accent);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
+        font-weight: 400;
+        color: var(--text-muted);
         margin-bottom: 1.5rem;
       }
 
-      .eyebrow::before,
-      .eyebrow::after {
-        content: '';
-        width: 40px;
-        height: 1px;
-        background: var(--accent);
-        flex-shrink: 0;
-      }
-
-      .section-title {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: clamp(2.5rem, 5vw, 4.5rem);
-        line-height: 0.9;
-        font-weight: 600;
+      /* ══════════ LIENS SOULIGNÉS DISCRETS ══════════ */
+      .link-underline {
+        position: relative;
+        display: inline-block;
+        font-family: var(--sans);
+        font-size: 0.85rem;
+        font-weight: 400;
+        letter-spacing: 0.04em;
         color: var(--text);
+        padding-bottom: 2px;
+        transition: color 0.4s var(--transition-slow);
       }
 
-      .section-subtitle {
-        font-family: 'Cormorant Garamond', serif;
-        font-style: italic;
-        color: var(--text2);
-        font-size: 1.1rem;
-        font-weight: 300;
-        line-height: 1.6;
-        margin-top: 1rem;
-        max-width: 540px;
+      .link-underline::after {
+        content: '';
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 1px;
+        background: currentColor;
+        transform-origin: left;
+        transition: transform 0.5s var(--transition-slow), background 0.4s;
       }
 
-      /* ══════════ FADE UP ANIMATION ══════════ */
-      .fade-up {
+      .link-underline:hover {
+        color: var(--accent);
+      }
+
+      .link-underline.gold::after {
+        background: var(--accent);
+      }
+
+      /* ══════════ FADE-INS LENTS ══════════ */
+      .fade-in {
         opacity: 0;
-        transform: translateY(40px);
-        transition: all 1s var(--transition-spring);
+        transform: translateY(24px);
+        transition: opacity 0.9s var(--transition-slow), transform 0.9s var(--transition-slow);
       }
 
-      .fade-up.visible {
+      .fade-in.visible {
         opacity: 1;
         transform: translateY(0);
       }
 
-      /* ══════════ GOLD SHIMMER ══════════ */
-      @keyframes goldShimmer {
-        0% { background-position: -200% center; }
-        100% { background-position: 200% center; }
+      .fade-in.delay-1 { transition-delay: 0.12s; }
+      .fade-in.delay-2 { transition-delay: 0.24s; }
+      .fade-in.delay-3 { transition-delay: 0.36s; }
+      .fade-in.delay-4 { transition-delay: 0.48s; }
+
+      /* ══════════ SCROLLBAR DISCRÈTE ══════════ */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: var(--bg); }
+      ::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+      /* ══════════ CONTAINER ══════════ */
+      .container {
+        width: 100%;
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 0 clamp(1.5rem, 4vw, 3rem);
       }
 
-      .gold-shimmer {
-        background: linear-gradient(
-          90deg,
-          var(--text) 0%,
-          var(--accent) 30%,
-          #f5d98b 50%,
-          var(--accent) 70%,
-          var(--text) 100%
-        );
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: goldShimmer 4s linear infinite;
+      .container-narrow {
+        width: 100%;
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 0 clamp(1.5rem, 4vw, 3rem);
       }
 
-      /* ══════════ SCROLLBAR ══════════ */
-      ::-webkit-scrollbar { width: 4px; height: 4px; }
-      ::-webkit-scrollbar-track { background: var(--bg2); }
-      ::-webkit-scrollbar-thumb { background: var(--accent-dark); border-radius: 2px; }
+      /* ══════════ SECTIONS ESPACÉES ══════════ */
+      .section {
+        padding: clamp(6rem, 12vw, 12rem) 0;
+      }
 
-      /* Desktop: hide dock */
-      @media (min-width: 1024px) {
-        #mobile-dock { display: none !important; }
-        body { padding-bottom: 0; }
+      .section-tight {
+        padding: clamp(4rem, 8vw, 8rem) 0;
+      }
+
+      /* ══════════ DIVIDER FIN ══════════ */
+      .rule {
+        width: 60px;
+        height: 1px;
+        background: var(--accent);
+        margin: 1.5rem 0;
+      }
+
+      .rule-center { margin: 1.5rem auto; }
+
+      /* ══════════ FORMS ══════════ */
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .field label {
+        font-family: var(--sans);
+        font-size: 0.7rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+
+      .field input,
+      .field textarea,
+      .field select {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--line-strong);
+        padding: 0.85rem 0.25rem;
+        font-family: var(--serif-text);
+        font-size: 1.05rem;
+        font-weight: 400;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.4s;
+        border-radius: 0;
+      }
+
+      .field input:focus,
+      .field textarea:focus,
+      .field select:focus {
+        border-color: var(--accent);
+      }
+
+      .field textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      /* ══════════ CTA SOULIGNÉ (PAS de bouton clinquant) ══════════ */
+      .cta-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.85rem 0;
+        font-family: var(--sans);
+        font-size: 0.78rem;
+        font-weight: 400;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--text);
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        position: relative;
+        transition: color 0.4s var(--transition-slow);
+      }
+
+      .cta-ghost::after {
+        content: '';
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 1px;
+        background: var(--text);
+        transform-origin: left;
+        transition: background 0.4s, transform 0.5s var(--transition-slow);
+      }
+
+      .cta-ghost:hover {
+        color: var(--accent);
+      }
+
+      .cta-ghost:hover::after {
+        background: var(--accent);
+      }
+
+      .cta-ghost .arrow {
+        transition: transform 0.4s var(--transition-slow);
+      }
+
+      .cta-ghost:hover .arrow {
+        transform: translateX(4px);
+      }
+
+      /* CTA pleine avec contour fin */
+      .cta-outline {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 1.1rem 2.4rem;
+        font-family: var(--sans);
+        font-size: 0.72rem;
+        font-weight: 400;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--text);
+        border: 1px solid var(--text);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.5s var(--transition-slow);
+      }
+
+      .cta-outline:hover {
+        background: var(--text);
+        color: var(--bg);
+      }
+
+      .cta-outline.gold {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .cta-outline.gold:hover {
+        background: var(--accent);
+        color: var(--bg);
       }
     </style>
   </head>
   <body>
+    {!hideHeader && (
+      <slot name="header" />
+    )}
+
     <slot />
 
-    <!-- Ultras Tracking -->
+    <!-- Ultras Tracking minimal -->
     <script is:inline>
       (function() {
         if (location.pathname.indexOf('/ultras-ctrl') !== -1) return;
         var geo = {};
         var lang = document.documentElement.lang || 'fr';
-
         function send(type, target) {
           var d = {
-            type: type,
-            page: location.pathname,
-            target: target || '',
-            lang: lang,
-            country: geo.country || 'XX',
+            type: type, page: location.pathname, target: target || '',
+            lang: lang, country: geo.country || 'XX',
             referrer: document.referrer || '',
             ua: navigator.userAgent.slice(0, 100),
             screen: screen.width + 'x' + screen.height,
-            ts: Date.now(),
+            ts: Date.now()
           };
           try { navigator.sendBeacon('/api/track', JSON.stringify(d)); } catch(e) {}
         }
-
-        (function() {
-          var cached = sessionStorage.getItem('geo_v1');
-          if (cached) {
-            try { geo = JSON.parse(cached); } catch(e) {}
-            send('pageview');
-          } else {
-            try {
-              fetch('/api/geo', { signal: typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(1500) : undefined })
-                .then(function(r) { return r.ok ? r.json() : {}; })
-                .then(function(data) {
-                  geo = data || {};
-                  try { sessionStorage.setItem('geo_v1', JSON.stringify(geo)); } catch(e) {}
-                  send('pageview');
-                })
-                .catch(function() { send('pageview'); });
-            } catch(e) { send('pageview'); }
-          }
-        })();
-
-        document.addEventListener('click', function(e) {
-          var el = e.target.closest('a[href], button');
-          if (!el) return;
-          var href = el.getAttribute('href') || '';
-          var id = el.id || el.textContent.trim().slice(0, 50);
-          if (href.indexOf('ultras-sites') !== -1 && href.indexOf('http') === 0) {
-            send('demo', href);
-          } else if (el.tagName === 'A' && href && href.indexOf('#') !== 0) {
-            send('click', href.slice(0, 200));
-          }
-        }, true);
+        var cached = sessionStorage.getItem('geo_v1');
+        if (cached) {
+          try { geo = JSON.parse(cached); } catch(e) {}
+          send('pageview');
+        } else {
+          try {
+            fetch('/api/geo').then(function(r){return r.ok?r.json():{};})
+            .then(function(data){ geo = data || {}; try { sessionStorage.setItem('geo_v1', JSON.stringify(geo)); } catch(e){} send('pageview'); })
+            .catch(function(){ send('pageview'); });
+          } catch(e) { send('pageview'); }
+        }
       })();
     </script>
 
-    <!-- Fade up observer -->
+    <!-- Fade-in observer (lents 700-900ms) -->
     <script is:inline>
       (function() {
         var observer = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             if (entry.isIntersecting) {
               entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
             }
           });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.fade-up').forEach(function(el) {
+        }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.fade-in').forEach(function(el) {
           observer.observe(el);
         });
+      })();
+    </script>
+
+    <!-- Theme persist -->
+    <script is:inline>
+      (function() {
+        var saved = localStorage.getItem('alba-theme') || 'cream';
+        document.documentElement.setAttribute('data-theme', saved);
       })();
     </script>
   </body>

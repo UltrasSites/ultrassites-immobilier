@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { translations, languages } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const langKey = lang && lang in translations ? lang : 'fr';
+const t = (translations as Record<string, Record<string, string>>)[langKey] || {};
+---
+
+<BaseLayout title={`Off-Market — Maison Alba`} description={t.offmarket_lead} lang={langKey}>
+  <Header lang={langKey} variant="solid" />
+
+  <section class="om-section">
+    <div class="container-narrow">
+      <div class="om-head fade-in">
+        <p class="eyebrow" style="text-align:center">{t.offmarket_eyebrow}</p>
+        <h1 class="om-title">{t.offmarket_title}</h1>
+        <div class="rule rule-center"></div>
+        <p class="om-lead">{t.offmarket_lead}</p>
+      </div>
+
+      <form id="om-form" class="om-form fade-in delay-2">
+        <div class="field">
+          <label for="om-name">{t.offmarket_form_name}</label>
+          <input type="text" id="om-name" name="name" required autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="om-email">{t.offmarket_form_email}</label>
+          <input type="email" id="om-email" name="email" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="om-search">{t.offmarket_form_search}</label>
+          <textarea id="om-search" name="search" rows="4" required></textarea>
+        </div>
+        <div class="om-submit">
+          <button type="submit" class="cta-outline gold">{t.offmarket_form_submit}</button>
+        </div>
+      </form>
+
+      <div id="om-thanks" class="om-thanks hidden">
+        <p class="eyebrow" style="text-align:center">·</p>
+        <h2 class="om-thanks-title">{t.offmarket_thanks_title}</h2>
+        <div class="rule rule-center"></div>
+        <p class="om-thanks-lead">{t.offmarket_thanks_lead}</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang={langKey} />
+</BaseLayout>
+
+<style>
+  .om-section {
+    padding: clamp(8rem, 14vw, 12rem) 0 clamp(6rem, 10vw, 10rem);
+  }
+
+  .om-head { text-align: center; margin-bottom: 4rem; }
+  .om-title {
+    font-style: italic;
+    font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+  .om-lead {
+    font-family: var(--serif-text);
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: var(--text-soft);
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .om-form {
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .om-submit {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .om-thanks {
+    text-align: center;
+    padding: 4rem 0;
+  }
+  .om-thanks.hidden { display: none; }
+  .om-form.hidden { display: none; }
+
+  .om-thanks-title {
+    font-style: italic;
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1rem;
+  }
+
+  .om-thanks-lead {
+    font-family: var(--serif-text);
+    font-size: 1.1rem;
+    color: var(--text-soft);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    var form = document.getElementById('om-form');
+    var thanks = document.getElementById('om-thanks');
+    if (!form || !thanks) return;
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var data = {
+        metier: 'immobilier-luxe',
+        step_reached: 3,
+        completed: true,
+        contact_nom: form.name.value || '',
+        contact_email: form.email.value || '',
+        contact_message: form.search.value || '',
+        utm_source: 'off-market',
+        lang: document.documentElement.lang || 'fr',
+      };
+      try {
+        fetch('/api/devis/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }).catch(function(){});
+      } catch (e) {}
+      form.classList.add('hidden');
+      thanks.classList.remove('hidden');
+      window.scrollTo({ top: form.offsetTop - 100, behavior: 'smooth' });
+    });
+  })();
+</script>

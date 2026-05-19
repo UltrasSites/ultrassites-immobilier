@@ -1,0 +1,550 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { translations, languages } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const langKey = lang && lang in translations ? lang : 'fr';
+const t = (translations as Record<string, Record<string, string>>)[langKey] || {};
+---
+
+<BaseLayout title={`${t.nav_estimation} — Maison Alba`} description={t.estim_lead} lang={langKey}>
+  <Header lang={langKey} variant="solid" />
+
+  <section class="estim-section">
+    <div class="container-narrow">
+      <div class="estim-head fade-in">
+        <p class="eyebrow" style="text-align:center">{t.estim_eyebrow}</p>
+        <h1 class="estim-title">
+          {t.estim_title.split('\n').map((line) => <span class="block-line">{line}</span>)}
+        </h1>
+        <div class="rule rule-center"></div>
+        <p class="estim-lead">{t.estim_lead}</p>
+      </div>
+
+      <div class="estim-progress fade-in delay-1">
+        <span class="estim-progress-text" id="estim-progress-text">{t.estim_step} 1 {t.estim_of} 4</span>
+        <div class="estim-progress-bar">
+          <span class="estim-progress-fill" id="estim-progress-fill"></span>
+        </div>
+      </div>
+
+      <div class="estim-wizard fade-in delay-2">
+        <!-- STEP 1 -->
+        <div class="estim-step active" data-step="1">
+          <h2 class="estim-q">{t.estim_q1}</h2>
+          <div class="estim-options">
+            <button type="button" class="estim-opt" data-q="type" data-val="maison">{t.estim_q1_opt1}</button>
+            <button type="button" class="estim-opt" data-q="type" data-val="appartement">{t.estim_q1_opt2}</button>
+            <button type="button" class="estim-opt" data-q="type" data-val="domaine">{t.estim_q1_opt3}</button>
+            <button type="button" class="estim-opt" data-q="type" data-val="exception">{t.estim_q1_opt4}</button>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="estim-step" data-step="2">
+          <h2 class="estim-q">{t.estim_q2}</h2>
+          <div class="field" style="margin-top:2rem">
+            <input type="text" id="estim-ville" name="ville" placeholder={t.estim_q2_placeholder} required />
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="estim-step" data-step="3">
+          <h2 class="estim-q">{t.estim_q3}</h2>
+          <div class="estim-slider-wrap">
+            <span class="estim-slider-value" id="estim-surface-value">300</span>
+            <span class="estim-slider-unit">{t.estim_q3_unit}</span>
+            <input
+              type="range"
+              id="estim-surface"
+              min="50"
+              max="1000"
+              step="10"
+              value="300"
+              class="estim-slider"
+            />
+            <div class="estim-slider-range">
+              <span>50</span>
+              <span>1000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="estim-step" data-step="4">
+          <h2 class="estim-q">{t.estim_q4}</h2>
+          <div class="estim-options stack">
+            <button type="button" class="estim-opt" data-q="etat" data-val="renover" data-mult="0.85">{t.estim_q4_opt1}</button>
+            <button type="button" class="estim-opt" data-q="etat" data-val="bon" data-mult="1.00">{t.estim_q4_opt2}</button>
+            <button type="button" class="estim-opt" data-q="etat" data-val="recent" data-mult="1.15">{t.estim_q4_opt3}</button>
+            <button type="button" class="estim-opt" data-q="etat" data-val="neuf" data-mult="1.25">{t.estim_q4_opt4}</button>
+            <button type="button" class="estim-opt" data-q="etat" data-val="exceptionnel" data-mult="1.45">{t.estim_q4_opt5}</button>
+          </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="estim-step estim-result" data-step="5">
+          <p class="eyebrow" style="text-align:center">{t.estim_result_title}</p>
+          <div class="estim-result-range">
+            <span id="estim-min">—</span>
+            <span class="estim-dash">·</span>
+            <span id="estim-max">—</span>
+            <span class="estim-currency">€</span>
+          </div>
+          <div class="rule rule-center"></div>
+          <p class="estim-result-lead">{t.estim_result_lead}</p>
+          <div class="estim-result-cta">
+            <a href={`/${langKey}/demande-privee`} class="cta-outline gold">{t.estim_result_cta}</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="estim-nav fade-in delay-3">
+        <button type="button" id="estim-back" class="estim-nav-btn ghost">{t.estim_back}</button>
+        <button type="button" id="estim-next" class="estim-nav-btn primary">{t.estim_next}</button>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang={langKey} />
+</BaseLayout>
+
+<style>
+  .estim-section { padding: clamp(8rem, 14vw, 12rem) 0 clamp(6rem, 10vw, 10rem); }
+
+  .estim-head { text-align: center; margin-bottom: 4rem; }
+  .estim-title {
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+  }
+  .estim-title .block-line { display: block; }
+  .estim-lead {
+    font-family: var(--serif-text);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-soft);
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  /* Progress */
+  .estim-progress {
+    max-width: 540px;
+    margin: 0 auto 4rem;
+  }
+  .estim-progress-text {
+    display: block;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 0.8rem;
+  }
+  .estim-progress-bar {
+    height: 1px;
+    background: var(--line-strong);
+    overflow: hidden;
+    position: relative;
+  }
+  .estim-progress-fill {
+    display: block;
+    height: 100%;
+    width: 25%;
+    background: var(--accent);
+    transition: width 0.6s var(--transition-slow);
+  }
+
+  /* Wizard */
+  .estim-wizard {
+    min-height: 320px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .estim-step {
+    display: none;
+    text-align: center;
+    animation: stepFade 0.6s var(--transition-slow);
+  }
+  .estim-step.active { display: block; }
+
+  @keyframes stepFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .estim-q {
+    font-family: var(--serif-display);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 2rem;
+  }
+
+  .estim-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .estim-options.stack {
+    grid-template-columns: 1fr;
+  }
+  @media (max-width: 540px) {
+    .estim-options { grid-template-columns: 1fr; }
+  }
+
+  .estim-opt {
+    padding: 1.4rem 1.5rem;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--serif-text);
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.4s var(--transition-slow);
+  }
+
+  .estim-opt:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .estim-opt.selected {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  /* Slider */
+  .estim-slider-wrap {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .estim-slider-value {
+    font-family: var(--serif-display);
+    font-size: clamp(3rem, 7vw, 5rem);
+    color: var(--text);
+    line-height: 1;
+  }
+  .estim-slider-unit {
+    display: block;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .estim-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  .estim-slider::-webkit-slider-runnable-track {
+    height: 1px;
+    background: var(--line-strong);
+  }
+  .estim-slider::-moz-range-track {
+    height: 1px;
+    background: var(--line-strong);
+  }
+  .estim-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: -8px;
+    border: 2px solid var(--bg);
+    cursor: pointer;
+    box-shadow: 0 0 0 1px var(--accent);
+    transition: transform 0.25s;
+  }
+  .estim-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    cursor: pointer;
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .estim-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+  .estim-slider-range {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    margin-top: 0.8rem;
+  }
+
+  /* Result */
+  .estim-result-range {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.8rem;
+    font-family: var(--serif-display);
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    color: var(--text);
+    line-height: 1;
+    margin: 1.5rem 0;
+  }
+  .estim-dash { color: var(--text-muted); }
+  .estim-currency {
+    font-size: 0.5em;
+    color: var(--text-soft);
+    margin-left: 0.4rem;
+  }
+
+  .estim-result-lead {
+    font-family: var(--serif-text);
+    font-size: 1.05rem;
+    color: var(--text-soft);
+    max-width: 480px;
+    margin: 1rem auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .estim-result-cta {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Nav */
+  .estim-nav {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 4rem;
+  }
+
+  .estim-nav-btn {
+    padding: 1rem 2.4rem;
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    transition: all 0.4s var(--transition-slow);
+  }
+
+  .estim-nav-btn.ghost {
+    color: var(--text-muted);
+    border-color: var(--line-strong);
+  }
+  .estim-nav-btn.ghost:hover {
+    color: var(--text);
+    border-color: var(--text);
+  }
+  .estim-nav-btn.ghost.hidden { visibility: hidden; }
+
+  .estim-nav-btn.primary {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .estim-nav-btn.primary:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .estim-nav-btn.primary:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .estim-nav-btn.hidden { display: none; }
+</style>
+
+<script is:inline>
+  (function() {
+    var state = {
+      step: 1,
+      type: null,
+      typeMult: 1,
+      ville: '',
+      surface: 300,
+      etat: null,
+      etatMult: 1,
+      lead_id: null,
+    };
+
+    // Multipliers
+    var TYPE_MULT = { maison: 1.0, appartement: 1.15, domaine: 0.95, exception: 1.6 };
+    var BASE_PRICE = 6500; // EUR/m² baseline (vague — premium)
+
+    var steps = document.querySelectorAll('.estim-step');
+    var progressFill = document.getElementById('estim-progress-fill');
+    var progressText = document.getElementById('estim-progress-text');
+    var nextBtn = document.getElementById('estim-next');
+    var backBtn = document.getElementById('estim-back');
+    var slider = document.getElementById('estim-surface');
+    var sliderVal = document.getElementById('estim-surface-value');
+
+    function showStep(n) {
+      state.step = n;
+      steps.forEach(function(s) {
+        s.classList.toggle('active', parseInt(s.getAttribute('data-step'), 10) === n);
+      });
+      var pct = n === 5 ? 100 : (n / 4) * 100;
+      if (progressFill) progressFill.style.width = pct + '%';
+      if (progressText) {
+        if (n === 5) {
+          progressText.textContent = '·';
+        } else {
+          var label = progressText.textContent;
+          // we just set raw
+          var stepLabel = document.documentElement.lang === 'en' ? 'Step' : document.documentElement.lang === 'es' ? 'Etapa' : document.documentElement.lang === 'pt' ? 'Etapa' : 'Étape';
+          var ofLabel = document.documentElement.lang === 'en' ? 'of' : document.documentElement.lang === 'es' ? 'de' : document.documentElement.lang === 'pt' ? 'de' : 'sur';
+          progressText.textContent = stepLabel + ' ' + n + ' ' + ofLabel + ' 4';
+        }
+      }
+      if (backBtn) backBtn.classList.toggle('hidden', n === 1 || n === 5);
+      if (nextBtn) nextBtn.classList.toggle('hidden', n === 5);
+      // Send progress lead silently
+      sendLead(n, n === 5);
+    }
+
+    function sendLead(stepReached, completed) {
+      var data = {
+        lead_id: state.lead_id || undefined,
+        metier: 'immobilier-luxe',
+        step_reached: stepReached,
+        completed: !!completed,
+        inputs: {
+          type: state.type,
+          ville: state.ville,
+          surface: state.surface,
+          etat: state.etat,
+        },
+        ville: state.ville,
+        currency: 'EUR',
+        utm_source: 'estimation-discrete',
+        lang: document.documentElement.lang || 'fr',
+      };
+      if (completed) {
+        var range = computeRange();
+        data.estimation_min = range.min;
+        data.estimation_max = range.max;
+      }
+      try {
+        fetch('/api/devis/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }).then(function(r){ return r.ok ? r.json() : null; })
+          .then(function(res){ if (res && res.lead_id) state.lead_id = res.lead_id; })
+          .catch(function(){});
+      } catch(e){}
+    }
+
+    function computeRange() {
+      var base = BASE_PRICE * state.surface * state.typeMult * state.etatMult;
+      var min = Math.round(base * 0.85 / 10000) * 10000;
+      var max = Math.round(base * 1.15 / 10000) * 10000;
+      return { min: min, max: max };
+    }
+
+    function formatPrice(n) {
+      var lang = document.documentElement.lang || 'fr';
+      var locale = lang === 'en' ? 'en-US' : lang === 'es' ? 'es-ES' : lang === 'pt' ? 'pt-PT' : 'fr-FR';
+      try {
+        return new Intl.NumberFormat(locale).format(n);
+      } catch(e) {
+        return String(n);
+      }
+    }
+
+    function showResult() {
+      var range = computeRange();
+      document.getElementById('estim-min').textContent = formatPrice(range.min);
+      document.getElementById('estim-max').textContent = formatPrice(range.max);
+      showStep(5);
+    }
+
+    // Options click
+    document.querySelectorAll('.estim-opt').forEach(function(btn){
+      btn.addEventListener('click', function() {
+        var q = btn.getAttribute('data-q');
+        var val = btn.getAttribute('data-val');
+        var mult = parseFloat(btn.getAttribute('data-mult') || '1');
+        // clear siblings
+        btn.parentElement.querySelectorAll('.estim-opt').forEach(function(s){ s.classList.remove('selected'); });
+        btn.classList.add('selected');
+        if (q === 'type') {
+          state.type = val;
+          state.typeMult = TYPE_MULT[val] || 1;
+        } else if (q === 'etat') {
+          state.etat = val;
+          state.etatMult = mult;
+        }
+      });
+    });
+
+    // Slider
+    if (slider) {
+      slider.addEventListener('input', function() {
+        state.surface = parseInt(slider.value, 10);
+        if (sliderVal) sliderVal.textContent = state.surface;
+      });
+    }
+
+    // Ville
+    var villeInput = document.getElementById('estim-ville');
+    if (villeInput) {
+      villeInput.addEventListener('input', function() {
+        state.ville = villeInput.value;
+      });
+    }
+
+    // Next / Back
+    function canAdvance() {
+      if (state.step === 1) return !!state.type;
+      if (state.step === 2) return state.ville.trim().length > 1;
+      if (state.step === 3) return state.surface > 0;
+      if (state.step === 4) return !!state.etat;
+      return true;
+    }
+
+    if (nextBtn) nextBtn.addEventListener('click', function() {
+      if (!canAdvance()) {
+        // gentle shake
+        nextBtn.style.transform = 'translateX(-3px)';
+        setTimeout(function(){ nextBtn.style.transform = ''; }, 100);
+        return;
+      }
+      if (state.step === 4) {
+        showResult();
+        return;
+      }
+      showStep(state.step + 1);
+    });
+
+    if (backBtn) backBtn.addEventListener('click', function() {
+      if (state.step > 1) showStep(state.step - 1);
+    });
+
+    // Initial
+    showStep(1);
+  })();
+</script>

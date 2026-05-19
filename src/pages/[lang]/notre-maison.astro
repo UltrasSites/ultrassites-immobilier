@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { translations, languages } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const langKey = lang && lang in translations ? lang : 'fr';
+const t = (translations as Record<string, Record<string, string>>)[langKey] || {};
+
+const portrait = 'https://images.unsplash.com/photo-1521119989659-a83eee488004?w=1400&h=1750&fit=crop&q=75&auto=format&sat=-100';
+---
+
+<BaseLayout title={`${t.nav_house} — Maison Alba`} description={t.meta_description} lang={langKey}>
+  <Header lang={langKey} variant="solid" />
+
+  <section class="house-section">
+    <div class="container">
+      <div class="house-head fade-in">
+        <p class="eyebrow">{t.house_eyebrow}</p>
+        <h1 class="house-title">{t.house_title}</h1>
+        <div class="rule"></div>
+      </div>
+
+      <div class="house-grid">
+        <div class="house-text">
+          <p class="house-para fade-in delay-1">{t.house_p1}</p>
+          <p class="house-para fade-in delay-2">{t.house_p2}</p>
+          <p class="house-para fade-in delay-3">{t.house_p3}</p>
+
+          <div class="house-network fade-in delay-4">
+            <span class="house-network-line"></span>
+            <span class="italic-quote">{t.house_network}</span>
+          </div>
+        </div>
+
+        <figure class="house-portrait fade-in delay-2">
+          <img src={portrait} alt="Fondateurs Maison Alba" loading="lazy" />
+          <figcaption>Marie-Claire Régnier & Édouard Fauret · Fondateurs</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang={langKey} />
+</BaseLayout>
+
+<style>
+  .house-section {
+    padding: clamp(8rem, 14vw, 12rem) 0 clamp(6rem, 10vw, 10rem);
+  }
+
+  .house-head {
+    max-width: 760px;
+    margin-bottom: clamp(4rem, 8vw, 6rem);
+  }
+
+  .house-title {
+    font-size: clamp(2.4rem, 5.5vw, 4.5rem);
+    line-height: 1.05;
+    margin-top: 1rem;
+  }
+
+  .house-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .house-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .house-para {
+    font-family: var(--serif-text);
+    font-size: 1.15rem;
+    line-height: 1.85;
+    color: var(--text-soft);
+    margin-bottom: 2rem;
+  }
+
+  .house-network {
+    margin-top: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    color: var(--text);
+  }
+
+  .house-network-line {
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .house-network span:last-child {
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+
+  .house-portrait {
+    position: sticky;
+    top: 6rem;
+  }
+
+  @media (max-width: 900px) {
+    .house-portrait {
+      position: static;
+      margin-top: 2rem;
+    }
+  }
+
+  .house-portrait img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+  }
+
+  .house-portrait figcaption {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 1.2rem;
+  }
+</style>

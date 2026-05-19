@@ -1,0 +1,474 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { translations, languages, estatesData, getEstates } from '../../../i18n/translations';
+import { stories, slugs } from '../../../i18n/estates-stories';
+
+export function getStaticPaths() {
+  const paths: any[] = [];
+  Object.keys(languages).forEach((lang) => {
+    slugs.forEach((slug) => {
+      paths.push({ params: { lang, slug } });
+    });
+  });
+  return paths;
+}
+
+const { lang, slug } = Astro.params;
+const langKey = lang && lang in translations ? lang : 'fr';
+const t = (translations as Record<string, Record<string, string>>)[langKey] || {};
+
+const estates = getEstates(t);
+const estate = estates.find((e) => e.slug === slug);
+const story = stories[langKey]?.[slug as string] || stories.fr[slug as string];
+
+const otherEstates = estates.filter((e) => e.slug !== slug).slice(0, 3);
+---
+
+<BaseLayout title={`${estate?.name} — ${estate?.city} | Maison Alba`} description={story?.history[0]?.slice(0, 160) || ''} lang={langKey}>
+  <Header lang={langKey} variant="overlay" />
+
+  <!-- ═══ HERO PLEINE LARGEUR ═══ -->
+  <section class="detail-hero">
+    <img src={estate?.cover} alt={estate?.name} class="detail-hero-img" fetchpriority="high" />
+    <div class="detail-hero-veil"></div>
+    <div class="detail-hero-content">
+      <p class="detail-hero-eyebrow">{estate?.city}</p>
+      <h1 class="detail-hero-title">{estate?.name}</h1>
+      <p class="detail-hero-price">{estate?.price}</p>
+    </div>
+  </section>
+
+  <!-- ═══ LAYOUT MAGAZINE ═══ -->
+  <div class="container detail-wrap">
+    <div class="detail-grid">
+      <!-- Contenu éditorial -->
+      <article class="detail-article">
+        <!-- Histoire -->
+        <section class="detail-section fade-in">
+          <p class="eyebrow">{t.detail_history}</p>
+          <div class="rule"></div>
+          {story?.history.map((para) => (
+            <p class="detail-para">{para}</p>
+          ))}
+        </section>
+
+        <!-- Caractéristiques -->
+        <section class="detail-section fade-in">
+          <p class="eyebrow">{t.detail_features}</p>
+          <div class="rule"></div>
+          <div class="features-grid">
+            <div class="feature">
+              <p class="feature-label">{t.detail_surface}</p>
+              <p class="feature-value">{estate?.surface} m²</p>
+            </div>
+            <div class="feature">
+              <p class="feature-label">{t.detail_rooms}</p>
+              <p class="feature-value">{estate?.rooms}</p>
+            </div>
+            <div class="feature">
+              <p class="feature-label">{t.detail_land}</p>
+              <p class="feature-value">{estate?.land}</p>
+            </div>
+            <div class="feature">
+              <p class="feature-label">{t.detail_year}</p>
+              <p class="feature-value">{estate?.year}</p>
+            </div>
+          </div>
+          <p class="feature-singular">{story?.singular}</p>
+        </section>
+
+        <!-- Galerie -->
+        <section class="detail-section fade-in">
+          <p class="eyebrow">{t.detail_gallery}</p>
+          <div class="rule"></div>
+          <div class="gallery">
+            {estate?.gallery.map((src, i) => (
+              <figure class={`gallery-item gi-${i % 4}`}>
+                <img src={src} alt={`${estate.name} — ${i + 1}`} loading="lazy" />
+              </figure>
+            ))}
+          </div>
+        </section>
+
+        <!-- Localisation -->
+        <section class="detail-section fade-in">
+          <p class="eyebrow">{t.detail_location}</p>
+          <div class="rule"></div>
+          <h2 class="detail-location-city">{estate?.city}</h2>
+          <p class="detail-para">{story?.locationCopy}</p>
+          <div class="detail-map" aria-hidden="true">
+            <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+              <rect width="800" height="300" fill="var(--bg-soft)"/>
+              <g stroke="var(--line-strong)" stroke-width="0.5" fill="none">
+                <path d="M0,150 Q200,80 400,150 T800,150"/>
+                <path d="M0,180 Q200,250 400,180 T800,180"/>
+                <path d="M50,120 L150,120 M250,200 L350,200 M450,100 L550,100 M650,180 L750,180"/>
+              </g>
+              <circle cx="400" cy="150" r="6" fill="var(--accent)"/>
+              <circle cx="400" cy="150" r="14" fill="none" stroke="var(--accent)" stroke-width="0.5" opacity="0.4"/>
+            </svg>
+          </div>
+        </section>
+      </article>
+
+      <!-- Sidebar agent -->
+      <aside class="detail-aside">
+        <div class="agent-card">
+          <p class="eyebrow">{t.detail_agent}</p>
+          <div class="rule"></div>
+          <p class="agent-name">{story?.agent.name}</p>
+          <p class="agent-line">
+            <a href={`tel:${story?.agent.tel.replace(/\s+/g,'')}`} class="agent-link">{story?.agent.tel}</a>
+          </p>
+          <p class="agent-line">
+            <a href={`mailto:${story?.agent.email}`} class="agent-link">{story?.agent.email}</a>
+          </p>
+          <div class="agent-cta">
+            <a href={`/${langKey}/demande-privee?demeure=${slug}`} class="cta-ghost">
+              <span>{t.detail_agent_request}</span>
+              <span class="arrow">→</span>
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Autres demeures -->
+    <section class="detail-others section-tight">
+      <p class="eyebrow fade-in" style="text-align:center">{t.nav_selection}</p>
+      <div class="rule rule-center fade-in"></div>
+      <div class="others-grid">
+        {otherEstates.map((e, i) => (
+          <a href={`/${langKey}/demeure/${e.slug}`} class={`other-card fade-in delay-${(i % 3) + 1}`}>
+            <div class="other-img-wrap">
+              <img src={e.cover} alt={e.name} loading="lazy" />
+            </div>
+            <p class="other-name">{e.name}</p>
+            <p class="other-city">{e.city}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <Footer lang={langKey} />
+</BaseLayout>
+
+<style>
+  /* ═══ HERO ═══ */
+  .detail-hero {
+    position: relative;
+    height: 80vh;
+    min-height: 520px;
+    overflow: hidden;
+    background: #1a1a1a;
+  }
+
+  .detail-hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: heroKenBurns 22s ease-out forwards;
+  }
+
+  @keyframes heroKenBurns {
+    from { transform: scale(1.02); }
+    to { transform: scale(1.08); }
+  }
+
+  .detail-hero-veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg,
+        rgba(0,0,0,0.35) 0%,
+        rgba(0,0,0,0.05) 30%,
+        rgba(0,0,0,0.3) 70%,
+        rgba(0,0,0,0.7) 100%);
+  }
+
+  .detail-hero-content {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: clamp(2rem, 5vw, 4rem);
+    color: #FBF8F2;
+    max-width: 800px;
+  }
+
+  .detail-hero-eyebrow {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    margin-bottom: 1rem;
+  }
+
+  .detail-hero-title {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-weight: 400;
+    color: #FBF8F2;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .detail-hero-price {
+    font-family: var(--serif-text);
+    color: rgba(251, 248, 242, 0.85);
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ═══ LAYOUT ═══ */
+  .detail-wrap {
+    padding-top: clamp(4rem, 8vw, 8rem);
+    padding-bottom: clamp(4rem, 8vw, 8rem);
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ═══ SECTIONS ARTICLE ═══ */
+  .detail-section {
+    margin-bottom: clamp(4rem, 8vw, 6rem);
+  }
+
+  .detail-section .rule {
+    margin-bottom: 2.5rem;
+  }
+
+  .detail-para {
+    font-family: var(--serif-text);
+    font-size: 1.1rem;
+    line-height: 1.85;
+    color: var(--text-soft);
+    margin-bottom: 1.5rem;
+    max-width: 720px;
+  }
+
+  /* ═══ FEATURES ═══ */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 700px) {
+    .features-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+  }
+
+  .feature {
+    border-top: 1px solid var(--line);
+    padding-top: 1.2rem;
+  }
+
+  .feature-label {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-value {
+    font-family: var(--serif-display);
+    font-size: 1.6rem;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .feature-singular {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--text);
+    border-left: 1px solid var(--accent);
+    padding-left: 1.2rem;
+    margin-top: 1rem;
+  }
+
+  /* ═══ GALLERY ═══ */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+  }
+
+  .gallery-item {
+    overflow: hidden;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--transition-slow);
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.03);
+  }
+
+  .gi-0 { grid-column: span 4; aspect-ratio: 16 / 10; }
+  .gi-1 { grid-column: span 2; aspect-ratio: 4 / 5; }
+  .gi-2 { grid-column: span 3; aspect-ratio: 5 / 4; }
+  .gi-3 { grid-column: span 3; aspect-ratio: 5 / 4; }
+
+  @media (max-width: 700px) {
+    .gallery {
+      grid-template-columns: 1fr;
+    }
+    .gi-0, .gi-1, .gi-2, .gi-3 {
+      grid-column: span 1;
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* ═══ MAP ═══ */
+  .detail-location-city {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    margin-bottom: 1rem;
+  }
+
+  .detail-map {
+    margin-top: 2rem;
+    aspect-ratio: 8 / 3;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+
+  .detail-map svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ═══ AGENT SIDEBAR ═══ */
+  .detail-aside {
+    position: sticky;
+    top: 6rem;
+  }
+
+  @media (max-width: 900px) {
+    .detail-aside {
+      position: static;
+    }
+  }
+
+  .agent-card {
+    padding: 2rem;
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+  }
+
+  .agent-name {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  .agent-line {
+    font-family: var(--serif-text);
+    font-size: 1rem;
+    color: var(--text-soft);
+    margin-bottom: 0.6rem;
+  }
+
+  .agent-link {
+    transition: color 0.3s;
+  }
+
+  .agent-link:hover {
+    color: var(--accent);
+  }
+
+  .agent-cta {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  /* ═══ OTHERS ═══ */
+  .detail-others {
+    margin-top: clamp(4rem, 8vw, 8rem);
+    border-top: 1px solid var(--line);
+    padding-top: clamp(4rem, 8vw, 6rem);
+  }
+
+  .others-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(2rem, 4vw, 3rem);
+    margin-top: 4rem;
+  }
+
+  @media (max-width: 700px) {
+    .others-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .other-card {
+    color: var(--text);
+    display: block;
+  }
+
+  .other-img-wrap {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .other-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--transition-slow);
+  }
+
+  .other-card:hover .other-img-wrap img {
+    transform: scale(1.02);
+  }
+
+  .other-name {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 1.25rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .other-city {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+</style>

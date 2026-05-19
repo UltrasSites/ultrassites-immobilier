@@ -1,0 +1,134 @@
+---
+import { translations } from '../i18n/translations';
+
+interface Props {
+  lang: string;
+}
+
+const { lang } = Astro.props;
+const langKey = lang && lang in translations ? lang : 'fr';
+const t = (translations as Record<string, Record<string, string>>)[langKey] || {};
+---
+
+<footer class="alba-footer">
+  <div class="container">
+    <div class="alba-footer-grid">
+      <!-- Maison -->
+      <div class="alba-footer-col">
+        <h4 class="alba-footer-title">{t.footer_col_house}</h4>
+        <ul>
+          <li><a href={`/${langKey}/notre-maison`}>{t.nav_house}</a></li>
+          <li><a href={`/${langKey}/notre-maison`}>{t.footer_col_house_history}</a></li>
+          <li><a href={`/${langKey}/demande-privee`}>{t.footer_col_contact}</a></li>
+        </ul>
+      </div>
+
+      <!-- Sélection -->
+      <div class="alba-footer-col">
+        <h4 class="alba-footer-title">{t.footer_col_selection}</h4>
+        <ul>
+          <li><a href={`/${langKey}/#selection`}>{t.nav_selection}</a></li>
+          <li><a href={`/${langKey}/off-market`}>{t.footer_col_offmarket}</a></li>
+          <li><a href={`/${langKey}/estimation-discrete`}>{t.footer_col_estimation}</a></li>
+        </ul>
+      </div>
+
+      <!-- Légal -->
+      <div class="alba-footer-col">
+        <h4 class="alba-footer-title">{t.footer_col_legal}</h4>
+        <ul>
+          <li><a href="#">{t.footer_col_legal_rgpd}</a></li>
+          <li><a href="#">{t.footer_col_legal_terms}</a></li>
+          <li><a href="#">{t.footer_col_legal_conf}</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="alba-footer-col">
+        <h4 class="alba-footer-title">{t.footer_col_contact}</h4>
+        <ul>
+          <li><a href={`tel:${t.request_phone.replace(/\s+/g,'')}`}>{t.request_phone}</a></li>
+          <li><a href={`mailto:${t.request_email}`}>{t.request_email}</a></li>
+          <li>{t.request_office}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alba-footer-bottom">
+      <span>{t.footer_rights}</span>
+      <span class="alba-footer-member">{t.footer_member}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .alba-footer {
+    padding: 5rem 0 2.5rem;
+    background: var(--bg-soft);
+    border-top: 1px solid var(--line);
+  }
+
+  .alba-footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3rem;
+    padding-bottom: 4rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 900px) {
+    .alba-footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5rem;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .alba-footer-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  .alba-footer-title {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+  }
+
+  .alba-footer-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .alba-footer-col li,
+  .alba-footer-col a {
+    font-family: var(--serif-text);
+    font-size: 0.95rem;
+    color: var(--text-soft);
+    transition: color 0.4s var(--transition-slow);
+  }
+
+  .alba-footer-col a:hover {
+    color: var(--accent);
+  }
+
+  .alba-footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+</style>
