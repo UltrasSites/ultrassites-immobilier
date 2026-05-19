@@ -198,15 +198,29 @@ const alternateLinks = Object.keys(languages).map((l) => ({
       }
 
       /* ══════════ FADE-INS LENTS ══════════ */
+      /* Visible par défaut, opacity-0 seulement si JS prêt + pas reduce-motion */
       .fade-in {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.9s var(--transition-slow), transform 0.9s var(--transition-slow);
+      }
+
+      html.js-ready .fade-in:not(.visible) {
         opacity: 0;
         transform: translateY(24px);
-        transition: opacity 0.9s var(--transition-slow), transform 0.9s var(--transition-slow);
       }
 
       .fade-in.visible {
         opacity: 1;
         transform: translateY(0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .fade-in, html.js-ready .fade-in:not(.visible) {
+          opacity: 1 !important;
+          transform: none !important;
+          transition: none !important;
+        }
       }
 
       .fade-in.delay-1 { transition-delay: 0.12s; }
@@ -418,6 +432,8 @@ const alternateLinks = Object.keys(languages).map((l) => ({
     <!-- Fade-in observer (lents 700-900ms) -->
     <script is:inline>
       (function() {
+        // Active le mode JS — masque les fade-in pour les animer
+        document.documentElement.classList.add('js-ready');
         var observer = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             if (entry.isIntersecting) {
@@ -425,9 +441,15 @@ const alternateLinks = Object.keys(languages).map((l) => ({
               observer.unobserve(entry.target);
             }
           });
-        }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+        // Marque visible immédiatement les éléments déjà dans le viewport au load
         document.querySelectorAll('.fade-in').forEach(function(el) {
-          observer.observe(el);
+          var rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            el.classList.add('visible');
+          } else {
+            observer.observe(el);
+          }
         });
       })();
     </script>

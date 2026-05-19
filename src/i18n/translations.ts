@@ -558,10 +558,10 @@ export const estatesData: Estate[] = [
   },
   {
     slug: 'le-pavillon-des-roses',
-    cover: 'https://images.unsplash.com/photo-1600566753086-00f18fe6ba75?w=1600&h=2000&fit=crop&q=75&auto=format',
+    cover: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1600&h=2000&fit=crop&q=75&auto=format',
     gallery: [
       'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=1600&h=1000&fit=crop&q=75&auto=format',
-      'https://images.unsplash.com/photo-1600566753051-f3cefd9c1c4d?w=1600&h=1000&fit=crop&q=75&auto=format',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&h=1000&fit=crop&q=75&auto=format',
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&h=1000&fit=crop&q=75&auto=format',
       'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=1600&h=1000&fit=crop&q=75&auto=format',
     ],
@@ -576,7 +576,7 @@ export const estatesData: Estate[] = [
     gallery: [
       'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&h=1000&fit=crop&q=75&auto=format',
       'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600&h=1000&fit=crop&q=75&auto=format',
-      'https://images.unsplash.com/photo-1600566753051-f3cefd9c1c4d?w=1600&h=1000&fit=crop&q=75&auto=format',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&h=1000&fit=crop&q=75&auto=format',
       'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1600&h=1000&fit=crop&q=75&auto=format',
     ],
     year: 2021,
